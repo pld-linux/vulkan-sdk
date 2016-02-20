@@ -143,7 +143,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n vulkan-layers
 %defattr(644,root,root,755)
-%doc LICENSE.txt layers/README.md
+%doc LICENSE.txt layers/README.md layers/vk_layer_settings.txt
 %dir %{_libdir}/vulkan/layer
 %{_libdir}/vulkan/layer/*.so
 %{_datadir}/vulkan/explicit_layer.d/*.json
