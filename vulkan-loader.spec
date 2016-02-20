@@ -7,7 +7,7 @@
 Summary:	Vulkan API loader
 Name:		vulkan-loader
 Version:	1.0.3.0
-Release:	0.1
+Release:	1
 License:	MIT-like
 Group:		Applications
 Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/%{tag}/%{name}-%{version}.tar.gz
