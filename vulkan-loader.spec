@@ -1,6 +1,7 @@
 #
 # Conditional build:
-%bcond_with	tests		# build with tests (doesn't work)
+%bcond_with	tests		# build with tests (require a working Vulkan
+				# driver (ICD))
 #
 %define	tag	windows-rt-%{version}
 Summary:	Vulkan API loader
@@ -72,6 +73,12 @@ cd build
 	%{!?with_tests:-DBUILD_TESTS=OFF} \
 		../
 %{__make}
+
+%if %{with tests}
+cd tests
+LC_ALL=C.utf-8 VK_LAYER_PATH=../layers LD_LIBRARY_PATH=../loader:../layers ./run_all_tests.sh
+cd ..
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
