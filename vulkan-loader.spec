@@ -7,7 +7,7 @@
 Summary:	Vulkan API loader
 Name:		vulkan-loader
 Version:	1.0.3.0
-Release:	2
+Release:	3
 License:	MIT-like
 Group:		Applications
 Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/%{tag}/%{name}-%{version}.tar.gz
@@ -70,6 +70,8 @@ Vulkan loader utilities.
 install -d build
 cd build
 %cmake \
+	-DCMAKE_INSTALL_DATADIR=share \
+	-DCMAKE_INSTALL_SYSCONFDIR=etc \
 	%{?with_tests:-DBUILD_TESTS=ON} \
 	%{!?with_tests:-DBUILD_TESTS=OFF} \
 		../
