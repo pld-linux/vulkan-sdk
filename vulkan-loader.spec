@@ -7,7 +7,7 @@
 Summary:	Vulkan API loader
 Name:		vulkan-loader
 Version:	1.0.3.0
-Release:	1
+Release:	2
 License:	MIT-like
 Group:		Applications
 Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/%{tag}/%{name}-%{version}.tar.gz
@@ -16,6 +16,7 @@ Patch0:		system_glslang.patch
 URL:		https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers
 #BuildRequires:	LunarGLASS-devel
 BuildRequires:	cmake
+BuildRequires:	glslang
 BuildRequires:	glslang-devel
 BuildRequires:	python3
 BuildRequires:	python3-modules
