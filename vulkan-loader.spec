@@ -2,16 +2,17 @@
 # Conditional build:
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
-#
-%define	tag	windows-rt-%{version}
+%define snap	20160222
+%define commit	b654da708be8f14e7f4c6f78df656229939422c8
+%define	rel	1
 Summary:	Vulkan API loader
 Name:		vulkan-loader
 Version:	1.0.3.0
-Release:	3
+Release:	3.s%{snap}.%{rel}
 License:	MIT-like
 Group:		Applications
-Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/%{tag}/%{name}-%{version}.tar.gz
-# Source0-md5:	0691d2d79cf62902df2973bbdf594028
+Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/%{commit}/%{name}-s%{snap}.tar.gz
+# Source0-md5:	25e8092b69d15090af5cada36d4fc92d
 Patch0:		system_glslang.patch
 URL:		https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers
 #BuildRequires:	LunarGLASS-devel
@@ -63,7 +64,7 @@ Requires:	%{name} = %{version}-%{release}
 Vulkan loader utilities.
 
 %prep
-%setup -qn Vulkan-LoaderAndValidationLayers-%{tag}
+%setup -qn Vulkan-LoaderAndValidationLayers-%{commit}
 %patch0 -p1
 
 %build
@@ -127,7 +128,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc LICENSE.txt
-%doc loader/{README.md,LoaderAndLayerInterface.md,LinuxICDs.txt}
+%doc loader/{README.md,LoaderAndLayerInterface.md}
 %dir %{_sysconfdir}/vulkan
 %dir %{_sysconfdir}/vulkan/icd.d
 %dir %{_sysconfdir}/vulkan/explicit_layer.d
