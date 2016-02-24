@@ -182,10 +182,19 @@ for f in layers/*.json ; do
 sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
 done
 
+%ifarch %x8664
 cp -p vktrace/libVkLayer_vktrace_layer.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
 cp -p vktrace/vkreplay $RPM_BUILD_ROOT%{_bindir}
 cp -p vktrace/vktrace $RPM_BUILD_ROOT%{_bindir}
-sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' ../vktrace/src/vktrace_layer/linux/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
+%else
+cp -p vktrace/libVkLayer_vktrace_layer32.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
+cp -p vktrace/vkreplay32 $RPM_BUILD_ROOT%{_bindir}
+cp -p vktrace/vktrace32 $RPM_BUILD_ROOT%{_bindir}
+rm $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
+sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' \
+    -e's@libVkLayer_vktrace_layer.so@libVkLayer_vktrace_layer32.so@' \
+	layers/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
+%endif
 
 cd ../..
 
@@ -230,10 +239,18 @@ rm -rf $RPM_BUILD_ROOT
 %doc vktrace-README.md vktrace-TODO.md
 %attr(755,root,root) %{_bindir}/vkjson_info
 %attr(755,root,root) %{_bindir}/vkjson_unittest
+%attr(755,root,root) %{_bindir}/vulkaninfo
+%ifarch %x8664
 %attr(755,root,root) %{_bindir}/vkreplay
 %attr(755,root,root) %{_bindir}/vktrace
-%attr(755,root,root) %{_bindir}/vulkaninfo
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_vktrace_layer.so
+%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
+%else
+%attr(755,root,root) %{_bindir}/vkreplay32
+%attr(755,root,root) %{_bindir}/vktrace32
+%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_vktrace_layer32.so
+%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
+%endif
 
 %files -n vulkan-validation-layers
 %defattr(644,root,root,755)
@@ -273,7 +290,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_generic.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_multi.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_screenshot.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
 
 %files -n vulkan-devel
 %defattr(644,root,root,755)
