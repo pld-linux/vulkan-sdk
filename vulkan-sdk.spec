@@ -195,8 +195,8 @@ cp -p VulkanTools/vktrace/TODO.md vktrace-TODO.md
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post	-n vulkan-loader -p /sbin/ldconfig
+%postun	-n vulkan-loader -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
