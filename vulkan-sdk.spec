@@ -18,7 +18,7 @@
 %define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	2
+%define	rel	3
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.3.0
@@ -56,7 +56,7 @@ BuildRequires:	udev-devel
 Requires:	vulkan-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
-Requires:	vulkan-tools = %{version}-%{release}
+Requires:	vulkan-sdk-tools = %{version}-%{release}
 Requires:	vulkan-validation-layers = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -75,7 +75,7 @@ Common loader for Vulkan API drivers.
 %package -n vulkan-validation-layers
 Summary:	Validation layers for Vulkan
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	vulkan-loader = %{version}-%{release}
 
 %description -n vulkan-validation-layers
 Validation layers for Vulkan.
@@ -83,7 +83,7 @@ Validation layers for Vulkan.
 %package -n vulkan-debug-layers
 Summary:	Debug layers for Vulkan
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	vulkan-loader = %{version}-%{release}
 
 %description -n vulkan-debug-layers
 Debug layers for Vulkan.
@@ -92,7 +92,7 @@ Debug layers for Vulkan.
 Summary:	Header files for the Vulkan API
 Summary(pl.UTF-8):	Pliki nagłówkowe API Vulkan
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	vulkan-loader = %{version}-%{release}
 
 %description -n vulkan-devel
 Header files for the Vulkan API.
