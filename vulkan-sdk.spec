@@ -4,6 +4,10 @@
 				# driver (ICD))
 %bcond_without	icd		# build without nulldrv and experimental Intel GPU driver
 
+%ifnarch %{x8664}
+%undefine       with_icd
+%endif
+
 %define	api_version 1.0.3
 %define llvm_version	3.4.2
 
