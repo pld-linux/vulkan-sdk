@@ -280,7 +280,7 @@ sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' \
 %if %{with icd}
 cp -p icd/*/libVK_*.so $RPM_BUILD_ROOT%{_libdir}
 for f in icd/*/*.json ; do
-sed -e's@"library_path": "./@"library_path": "@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/icd.d/$(basename $f)
+sed -e's@"library_path": "./@"library_path": "@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/icd.d/%{name}-$(basename $f)
 done
 %endif
 cd ../..
@@ -393,11 +393,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc VulkanTools/LICENSE.txt
 %attr(755,root,root) %{_libdir}/libVK_i965.so
-%{_datadir}/vulkan/icd.d/intel_icd.json
+%{_datadir}/vulkan/icd.d/%{name}-intel_icd.json
 
 %files icd-nulldrv
 %defattr(644,root,root,755)
 %doc VulkanTools/LICENSE.txt
 %attr(755,root,root) %{_libdir}/libVK_nulldrv.so
-%{_datadir}/vulkan/icd.d/nulldrv_icd.json
+%{_datadir}/vulkan/icd.d/%{name}-nulldrv_icd.json
 %endif
