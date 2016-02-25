@@ -18,7 +18,7 @@
 %define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	1
+%define	rel	2
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.3.0
