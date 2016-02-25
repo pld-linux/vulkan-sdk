@@ -53,11 +53,11 @@ BuildRequires:	python3-modules
 BuildRequires:	spirv-tools-devel
 BuildRequires:	udev-devel
 %{?with_icd:BuildRequires:	xorg-lib-libpciaccess-devel}
-Requires:	vulkan-debug-layers = %{version}-%{release}
+Requires:	%{name}-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
 Requires:	vulkan-sdk-tools = %{version}-%{release}
-Requires:	vulkan-validation-layers = %{version}-%{release}
+Requires:	%{name}-validation-layers = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -72,20 +72,20 @@ Provides:	vulkan(loader) = %{api_version}
 %description -n vulkan-loader
 Common loader for Vulkan API drivers.
 
-%package -n vulkan-validation-layers
+%package validation-layers
 Summary:	Validation layers for Vulkan
 Group:		Development/Libraries
 Requires:	vulkan-loader = %{version}-%{release}
 
-%description -n vulkan-validation-layers
+%description validation-layers
 Validation layers for Vulkan.
 
-%package -n vulkan-debug-layers
+%package debug-layers
 Summary:	Debug layers for Vulkan
 Group:		Development/Libraries
 Requires:	vulkan-loader = %{version}-%{release}
 
-%description -n vulkan-debug-layers
+%description debug-layers
 Debug layers for Vulkan.
 
 %package -n vulkan-devel
@@ -340,7 +340,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
 %endif
 
-%files -n vulkan-validation-layers
+%files validation-layers
 %defattr(644,root,root,755)
 %doc Vulkan-LoaderAndValidationLayers/LICENSE.txt
 %doc Vulkan-LoaderAndValidationLayers/layers/{README.md,vk_layer_settings.txt}
@@ -364,7 +364,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_threading.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_unique_objects.json
 
-%files -n vulkan-debug-layers
+%files debug-layers
 %defattr(644,root,root,755)
 %doc VulkanTools/LICENSE.txt
 %doc VulkanTools/layers/{README.md,vk_layer_settings.txt}
