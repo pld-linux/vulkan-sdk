@@ -2,15 +2,18 @@
 # Conditional build:
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
-%bcond_with	intel_icd	# build experimental Intel GPU driver
+%bcond_without	icd		# build without nulldrv and experimental Intel GPU driver
 
 %define	api_version 1.0.3
+%define llvm_version	3.4.2
 
 %define snap	20160223
 # sdk-1.0.3 branch
 %define loader_commit	b654da708be8f14e7f4c6f78df656229939422c8
 # master branch
 %define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
+# master branch
+%define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
 %define	rel	1
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
@@ -22,10 +25,16 @@ Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archiv
 # Source0-md5:	25e8092b69d15090af5cada36d4fc92d
 Source1:	https://github.com/LunarG/VulkanTools/archive/%{tools_commit}/VulkanTools-s%{snap}.tar.gz
 # Source1-md5:	89ae56a0c0270a7043548bc30c99aa36
+Source2:	https://github.com/LunarG/LunarGLASS/archive/%{lg_commit}/LunarGLASS-%{snap}.tar.gz
+# Source2-md5:	b0fb3253c782e1e539a5884dde8a31f8
+Source3:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.gz
+# Source3-md5:	a20669f75967440de949ac3b1bad439c
 Patch0:		system_glslang.patch
+Patch1:		LunarGLASS-CMakeLists.patch
 URL:		http://lunarg.com/vulkan-sdk/
-%{?with_intel_icd:BuildRequires:	Mesa-libGL-devel}
+%{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
+%{?with_icd:BuildRequires:  clang}
 BuildRequires:	cmake
 BuildRequires:	GLM
 BuildRequires:	glslang
@@ -38,7 +47,7 @@ BuildRequires:	python3
 BuildRequires:	python3-modules
 BuildRequires:	spirv-tools-devel
 BuildRequires:	udev-devel
-%{?with_intel_icd:BuildRequires:	xorg-lib-libpciaccess-devel}
+%{?with_icd:BuildRequires:	xorg-lib-libpciaccess-devel}
 Requires:	vulkan-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
@@ -104,13 +113,41 @@ Requires:	vulkan-loader = %{version}-%{release}
 %description tools
 Vulkan tools.
 
+%package icd-intel
+Summary:	Experimental Vulkan driver for Intel GPUs
+Group:		X11/Libraries
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description icd-intel
+Experimental Vulkan driver for Intel GPUs.
+
+%package icd-nulldrv
+Summary:	Dummy Vulkan driver
+Group:		X11/Libraries
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description icd-nulldrv
+Dummy Vulkan driver.
+
 %prep
-%setup -q -c -a1
+%setup -q -c -a1 %{?with_icd:-a2}
 
 mv Vulkan-LoaderAndValidationLayers-%{loader_commit} Vulkan-LoaderAndValidationLayers
 mv VulkanTools-%{tools_commit} VulkanTools
 
 %patch0 -p1
+
+%if %{with icd}
+mv LunarGLASS-%{lg_commit} LunarGLASS
+cd LunarGLASS/Core/LLVM/llvm-3.4
+tar -x --strip-components=1 --skip-old-files -f %{SOURCE3}
+cp -R ../../../../VulkanTools/LunarGLASS/* .
+cd ../../../..
+
+%patch1 -p1
+%endif
 
 ln -s Vulkan-LoaderAndValidationLayers LoaderAndValidationLayers
 
@@ -130,11 +167,40 @@ cd tests
 LC_ALL=C.utf-8 VK_LAYER_PATH=../layers LD_LIBRARY_PATH=../loader:../layers ./run_all_tests.sh
 cd ..
 %endif
+
 cd ../..
+
+%if %{with icd}
+cd LunarGLASS/Core/LLVM/llvm-3.4
+install -d build
+cd build
+../%configure \
+	--disable-bindings \
+	--disable-curses \
+	--disable-terminfo
+
+REQUIRES_RTTI=1 %{__make}
+REQUIRES_RTTI=1 %{__make} install prefix=%{_prefix}/local DESTDIR=`pwd`/install
+
+cd ../../../..
+
+install -d build
+cd build
+%cmake \
+	-DGLSLANGINCLUDES=%{_includedir}/glslang \
+	-DGLSLANGLIBS=%{_libdir} \
+	../
+%{__make}
+%{__make} install
+
+%{?with_tests:%{__make} test}
+
+cd ../..
+%endif
 
 cd VulkanTools/build
 %cmake \
-	-DBUILD_ICD=%{?with_intel_icd:ON}%{!?with_intel_icd:OFF} \
+	-DBUILD_ICD=%{?with_icd:ON}%{!?with_icd:OFF} \
 	../
 
 %{__make}
@@ -174,6 +240,7 @@ cp -p ../include/vulkan/* $RPM_BUILD_ROOT%{_includedir}/vulkan
 cp -p ../demos/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
 cd ../..
+
 cd VulkanTools/build
 %{__make} install
 
@@ -196,6 +263,12 @@ sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' \
 	layers/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
 %endif
 
+%if %{with icd}
+cp -p icd/*/libVK_*.so $RPM_BUILD_ROOT%{_libdir}
+for f in icd/*/*.json ; do
+sed -e's@"library_path": "./@"library_path": "@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/icd.d/$(basename $f)
+done
+%endif
 cd ../..
 
 cp -p VulkanTools/vktrace/README.md vktrace-README.md
@@ -299,3 +372,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/vulkan
 %{_includedir}/vkjson.h
 %{_examplesdir}/%{name}-%{version}
+
+%if %{with icd}
+%files icd-intel
+%defattr(644,root,root,755)
+%doc VulkanTools/LICENSE.txt
+%attr(755,root,root) %{_libdir}/libVK_i965.so
+%{_datadir}/vulkan/icd.d/intel_icd.json
+
+%files icd-nulldrv
+%defattr(644,root,root,755)
+%doc VulkanTools/LICENSE.txt
+%attr(755,root,root) %{_libdir}/libVK_nulldrv.so
+%{_datadir}/vulkan/icd.d/nulldrv_icd.json
+%endif
