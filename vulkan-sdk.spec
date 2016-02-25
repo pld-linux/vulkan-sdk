@@ -31,6 +31,7 @@ Source3:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.g
 # Source3-md5:	a20669f75967440de949ac3b1bad439c
 Patch0:		system_glslang.patch
 Patch1:		LunarGLASS-CMakeLists.patch
+Patch2:		demos_out_of_src.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
@@ -138,6 +139,7 @@ mv Vulkan-LoaderAndValidationLayers-%{loader_commit} Vulkan-LoaderAndValidationL
 mv VulkanTools-%{tools_commit} VulkanTools
 
 %patch0 -p1
+%patch2 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
@@ -152,8 +154,9 @@ cd ../../../..
 ln -s Vulkan-LoaderAndValidationLayers LoaderAndValidationLayers
 
 %build
-install -d {Vulkan-LoaderAndValidationLayers,VulkanTools}/build
+install -d Vulkan-LoaderAndValidationLayers/build
 cd Vulkan-LoaderAndValidationLayers/build
+
 %cmake \
 	-DCMAKE_INSTALL_DATADIR=share \
 	-DCMAKE_INSTALL_SYSCONFDIR=etc \
@@ -198,6 +201,7 @@ cd build
 cd ../..
 %endif
 
+install -d VulkanTools/build
 cd VulkanTools/build
 %cmake \
 	-DBUILD_ICD=%{?with_icd:ON}%{!?with_icd:OFF} \
@@ -212,6 +216,7 @@ install -d $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/icd.d \
 $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/{explicit,implicit}_layer.d \
 	$RPM_BUILD_ROOT{%{_bindir},%{_libdir}/vulkan/layer} \
 	$RPM_BUILD_ROOT%{_includedir}/vulkan \
+	$RPM_BUILD_ROOT%{_datadir}/%{name}-demos \
 	$RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
 
@@ -225,6 +230,7 @@ ln -s libvulkan.so.1.0.3 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
 cp -p demos/vulkaninfo $RPM_BUILD_ROOT%{_bindir}/vulkaninfo
 cp -p demos/tri $RPM_BUILD_ROOT%{_bindir}/vulkan-tri
 cp -p demos/cube $RPM_BUILD_ROOT%{_bindir}/vulkan-cube
+cp -p demos/{lunarg.ppm,*-vert.spv,*-frag.spv} $RPM_BUILD_ROOT%{_datadir}/%{name}-demos
 
 cp -p install_staging/*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
 for f in layers/*.json ; do
@@ -238,6 +244,10 @@ cp -p ../libs/vkjson/vkjson.h $RPM_BUILD_ROOT%{_includedir}
 cp -p ../include/vulkan/* $RPM_BUILD_ROOT%{_includedir}/vulkan
 
 cp -p ../demos/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
+
+# restore original demo sources in %{_examplesdir}
+%patch2 -R -p3 -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
+rm -f $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*.orig 2>/dev/null || :
 
 cd ../..
 
@@ -305,6 +315,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc Vulkan-LoaderAndValidationLayers/LICENSE.txt
 %attr(755,root,root) %{_bindir}/vulkan-tri
 %attr(755,root,root) %{_bindir}/vulkan-cube
+%{_datadir}/%{name}-demos
 
 %files tools
 %defattr(644,root,root,755)
