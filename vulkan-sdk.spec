@@ -36,6 +36,7 @@ Source3:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.g
 Patch0:		system_glslang.patch
 Patch1:		LunarGLASS-CMakeLists.patch
 Patch2:		demos_out_of_src.patch
+Patch3:		rpath.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
@@ -144,6 +145,7 @@ mv VulkanTools-%{tools_commit} VulkanTools
 
 %patch0 -p1
 %patch2 -p1
+%patch3 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
