@@ -18,7 +18,7 @@
 %define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	4
+%define	rel	5
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.3.0
@@ -260,7 +260,10 @@ cd ../..
 cd VulkanTools/build
 %{__make} install
 
-cp -p install_staging/*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
+# liblayer_utils.so here overwrites the one from validation layers
+# do not install it! layers only
+cp -p install_staging/libVkLayer_*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
+
 for f in layers/*.json ; do
 sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
 done
