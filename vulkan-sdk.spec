@@ -3,6 +3,7 @@
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
 %bcond_with	icd		# build experimental Vulkan drivers
+%bcond_without	wayland		# disable Wayland support in loader
 
 %ifnarch %{x8664}
 %undefine       with_icd
@@ -18,7 +19,7 @@
 %define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	5
+%define	rel	6
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.3.0
@@ -38,6 +39,7 @@ Patch1:		LunarGLASS-CMakeLists.patch
 Patch2:		demos_out_of_src.patch
 Patch3:		rpath.patch
 Patch4:		loader_repo_name.patch
+Patch5:		wayland.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
@@ -148,6 +150,7 @@ mv VulkanTools-%{tools_commit} VulkanTools
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
@@ -166,8 +169,8 @@ cd Vulkan-LoaderAndValidationLayers/build
 %cmake \
 	-DCMAKE_INSTALL_DATADIR=share \
 	-DCMAKE_INSTALL_SYSCONFDIR=etc \
-	%{?with_tests:-DBUILD_TESTS=ON} \
-	%{!?with_tests:-DBUILD_TESTS=OFF} \
+	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
+	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
 		../
 %{__make}
 
