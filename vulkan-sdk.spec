@@ -37,6 +37,7 @@ Patch0:		system_glslang.patch
 Patch1:		LunarGLASS-CMakeLists.patch
 Patch2:		demos_out_of_src.patch
 Patch3:		rpath.patch
+Patch4:		loader_repo_name.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
@@ -146,6 +147,7 @@ mv VulkanTools-%{tools_commit} VulkanTools
 %patch0 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
@@ -156,8 +158,6 @@ cd ../../../..
 
 %patch1 -p1
 %endif
-
-ln -s Vulkan-LoaderAndValidationLayers LoaderAndValidationLayers
 
 %build
 install -d Vulkan-LoaderAndValidationLayers/build
