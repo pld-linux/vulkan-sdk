@@ -2,7 +2,7 @@
 # Conditional build:
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
-%bcond_without	icd		# build without nulldrv and experimental Intel GPU driver
+%bcond_with	icd		# build experimental Vulkan drivers
 
 %ifnarch %{x8664}
 %undefine       with_icd
