@@ -19,7 +19,7 @@
 %define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	6
+%define	rel	7
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.3.0
@@ -40,6 +40,7 @@ Patch2:		demos_out_of_src.patch
 Patch3:		rpath.patch
 Patch4:		loader_repo_name.patch
 Patch5:		wayland.patch
+Patch6:		validation_swapchain_fence.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
@@ -151,6 +152,7 @@ mv VulkanTools-%{tools_commit} VulkanTools
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
