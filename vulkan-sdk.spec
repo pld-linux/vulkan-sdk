@@ -1,63 +1,63 @@
 #
+# TODO:
+#	- update wayland patch so Wayland can be included together with XCB
+#	again
+#
 # Conditional build:
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
 %bcond_with	icd		# build experimental Vulkan drivers
-%bcond_without	wayland		# disable Wayland support in loader
+%bcond_with	wayland		# enable Wayland support in loader
 
 %ifnarch %{x8664}
 %undefine       with_icd
 %endif
 
-%define	api_version 1.0.3
+%define	api_version 1.0.5
 %define llvm_version	3.4.2
 
-%define snap	20160223
-# sdk-1.0.3 branch
-%define loader_commit	b654da708be8f14e7f4c6f78df656229939422c8
-# master branch
-%define tools_commit	e5dccf86cf999ff9988be97337d0e3a3d508b085
+%define snap	20160312
+# sdk-1.0.5 branch
+%define tools_commit	f69ba448ea3a56f5104535636e27b8b8ab543455
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
 %define	rel	7
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
-Version:	1.0.3.0
-Release:	3.s%{snap}.%{rel}
+Version:	1.0.5.0
+Release:	0.s%{snap}.%{rel}
 License:	MIT-like
 Group:		Development
-Source0:	https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/archive/%{loader_commit}/Vulkan-LoaderAndValidationLayers-s%{snap}.tar.gz
-# Source0-md5:	25e8092b69d15090af5cada36d4fc92d
-Source1:	https://github.com/LunarG/VulkanTools/archive/%{tools_commit}/VulkanTools-s%{snap}.tar.gz
-# Source1-md5:	89ae56a0c0270a7043548bc30c99aa36
-Source2:	https://github.com/LunarG/LunarGLASS/archive/%{lg_commit}/LunarGLASS-%{snap}.tar.gz
-# Source2-md5:	b0fb3253c782e1e539a5884dde8a31f8
-Source3:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.gz
-# Source3-md5:	a20669f75967440de949ac3b1bad439c
+Source0:	https://github.com/LunarG/VulkanTools/archive/%{tools_commit}/VulkanTools-s%{snap}.tar.gz
+# Source0-md5:	dab7bc3a32918a3e124a379b338f9ed2
+Source1:	https://github.com/LunarG/LunarGLASS/archive/%{lg_commit}/LunarGLASS-%{snap}.tar.gz
+# Source1-md5:	b0fb3253c782e1e539a5884dde8a31f8
+Source2:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.gz
+# Source2-md5:	a20669f75967440de949ac3b1bad439c
 Patch0:		system_glslang.patch
 Patch1:		LunarGLASS-CMakeLists.patch
 Patch2:		demos_out_of_src.patch
 Patch3:		rpath.patch
-Patch4:		loader_repo_name.patch
-Patch5:		wayland.patch
-Patch6:		validation_swapchain_fence.patch
+Patch4:		wayland.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
 %{?with_icd:BuildRequires:  clang}
 BuildRequires:	cmake
 BuildRequires:	GLM
-BuildRequires:	glslang
-BuildRequires:	glslang-devel
+BuildRequires:	glslang >= 3.0.s20160307
+BuildRequires:	glslang-devel >= 3.0.s20160307
 BuildRequires:	graphviz
 BuildRequires:	ImageMagick-devel
 BuildRequires:	libpng
 BuildRequires:	libxcb-devel
 BuildRequires:	python3
 BuildRequires:	python3-modules
-BuildRequires:	spirv-tools-devel
+BuildRequires:	spirv-tools-devel >= 1.0_rev3.s20160312
 BuildRequires:	udev-devel
 %{?with_icd:BuildRequires:	xorg-lib-libpciaccess-devel}
+Requires:	glslang >= 3.0.s20160307
+Requires:	spirv-tools >= 1.0_rev3.s20160312
 Requires:	%{name}-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
@@ -127,7 +127,7 @@ Vulkan tools.
 Summary:	Experimental Vulkan driver for Intel GPUs
 Group:		X11/Libraries
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.3
+Provides:	vulkan(icd) = 1.0.5
 
 %description icd-intel
 Experimental Vulkan driver for Intel GPUs.
@@ -136,23 +136,20 @@ Experimental Vulkan driver for Intel GPUs.
 Summary:	Dummy Vulkan driver
 Group:		X11/Libraries
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.3
+Provides:	vulkan(icd) = 1.0.5
 
 %description icd-nulldrv
 Dummy Vulkan driver.
 
 %prep
-%setup -q -c -a1 %{?with_icd:-a2}
+%setup -q -c %{?with_icd:-a1}
 
-mv Vulkan-LoaderAndValidationLayers-%{loader_commit} Vulkan-LoaderAndValidationLayers
 mv VulkanTools-%{tools_commit} VulkanTools
 
 %patch0 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+#%patch4 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
@@ -165,24 +162,6 @@ cd ../../../..
 %endif
 
 %build
-install -d Vulkan-LoaderAndValidationLayers/build
-cd Vulkan-LoaderAndValidationLayers/build
-
-%cmake \
-	-DCMAKE_INSTALL_DATADIR=share \
-	-DCMAKE_INSTALL_SYSCONFDIR=etc \
-	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
-	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
-		../
-%{__make}
-
-%if %{with tests}
-cd tests
-LC_ALL=C.utf-8 VK_LAYER_PATH=../layers LD_LIBRARY_PATH=../loader:../layers ./run_all_tests.sh
-cd ..
-%endif
-
-cd ../..
 
 %if %{with icd}
 cd LunarGLASS/Core/LLVM/llvm-3.4
@@ -214,11 +193,22 @@ cd ../..
 
 install -d VulkanTools/build
 cd VulkanTools/build
-%cmake \
-	-DBUILD_ICD=%{?with_icd:ON}%{!?with_icd:OFF} \
-	../
 
+%cmake \
+	-DCMAKE_INSTALL_DATADIR=share \
+	-DCMAKE_INSTALL_SYSCONFDIR=etc \
+	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
+	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
+	-DBUILD_ICD=%{?with_icd:ON}%{!?with_icd:OFF} \
+		../
 %{__make}
+
+%if %{with tests}
+cd tests
+LC_ALL=C.utf-8 VK_LAYER_PATH=../layers LD_LIBRARY_PATH=../loader:../layers ./run_all_tests.sh
+cd ..
+%endif
+
 cd ../..
 
 %install
@@ -231,16 +221,17 @@ $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/{explicit,implicit}_layer.d \
 	$RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
 
-cd Vulkan-LoaderAndValidationLayers/build
+cd VulkanTools/build
 %{__make} install
 
-cp -p loader/libvulkan.so.1.0.3 $RPM_BUILD_ROOT%{_libdir}
-ln -s libvulkan.so.1.0.3 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so
-ln -s libvulkan.so.1.0.3 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
+cp -p loader/libvulkan.so.1.0.5 $RPM_BUILD_ROOT%{_libdir}
+ln -s libvulkan.so.1.0.5 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so
+ln -s libvulkan.so.1.0.5 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
 
 cp -p demos/vulkaninfo $RPM_BUILD_ROOT%{_bindir}/vulkaninfo
 cp -p demos/tri $RPM_BUILD_ROOT%{_bindir}/vulkan-tri
 cp -p demos/cube $RPM_BUILD_ROOT%{_bindir}/vulkan-cube
+cp -p demos/smoke/smoke $RPM_BUILD_ROOT%{_bindir}/vulkan-smoke
 cp -p demos/{lunarg.ppm,*-vert.spv,*-frag.spv} $RPM_BUILD_ROOT%{_datadir}/%{name}-demos
 
 cp -p install_staging/*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
@@ -254,24 +245,11 @@ cp -p libs/vkjson/vkjson_{info,unittest} $RPM_BUILD_ROOT%{_bindir}
 cp -p ../libs/vkjson/vkjson.h $RPM_BUILD_ROOT%{_includedir}
 cp -p ../include/vulkan/* $RPM_BUILD_ROOT%{_includedir}/vulkan
 
-cp -p ../demos/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
+cp -pr ../demos/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
 # restore original demo sources in %{_examplesdir}
 %patch2 -R -p3 -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 rm -f $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*.orig 2>/dev/null || :
-
-cd ../..
-
-cd VulkanTools/build
-%{__make} install
-
-# liblayer_utils.so here overwrites the one from validation layers
-# do not install it! layers only
-cp -p install_staging/libVkLayer_*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
-
-for f in layers/*.json ; do
-sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
-done
 
 %ifarch %x8664
 cp -p vktrace/libVkLayer_vktrace_layer.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
@@ -309,8 +287,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n vulkan-loader
 %defattr(644,root,root,755)
-%doc Vulkan-LoaderAndValidationLayers/LICENSE.txt
-%doc Vulkan-LoaderAndValidationLayers/loader/{README.md,LoaderAndLayerInterface.md}
+%doc VulkanTools/LICENSE.txt
+%doc VulkanTools/loader/{README.md,LoaderAndLayerInterface.md}
 %dir %{_sysconfdir}/vulkan
 %dir %{_sysconfdir}/vulkan/icd.d
 %dir %{_sysconfdir}/vulkan/explicit_layer.d
@@ -326,9 +304,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files demos
 %defattr(644,root,root,755)
-%doc Vulkan-LoaderAndValidationLayers/LICENSE.txt
-%attr(755,root,root) %{_bindir}/vulkan-tri
+%doc VulkanTools/LICENSE.txt
 %attr(755,root,root) %{_bindir}/vulkan-cube
+%attr(755,root,root) %{_bindir}/vulkan-smoke
+%attr(755,root,root) %{_bindir}/vulkan-tri
 %{_datadir}/%{name}-demos
 
 %files tools
@@ -352,8 +331,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files validation-layers
 %defattr(644,root,root,755)
-%doc Vulkan-LoaderAndValidationLayers/LICENSE.txt
-%doc Vulkan-LoaderAndValidationLayers/layers/{README.md,vk_layer_settings.txt}
+%doc VulkanTools/LICENSE.txt
+%doc VulkanTools/layers/{README.md,vk_layer_settings.txt}
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_device_limits.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_draw_state.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_image.so
@@ -391,7 +370,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n vulkan-devel
 %defattr(644,root,root,755)
-%doc Vulkan-LoaderAndValidationLayers/{LICENSE.txt,README.md}
+%doc VulkanTools/{LICENSE.txt,README.md}
 %{_libdir}/libvulkan.so
 %{_libdir}/libvkjson.a
 %{_includedir}/vulkan

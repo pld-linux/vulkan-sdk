@@ -1,6 +1,6 @@
-diff -dur vulkan-sdk-1.0.3.0.orig/Vulkan-LoaderAndValidationLayers/demos/cube.c vulkan-sdk-1.0.3.0/Vulkan-LoaderAndValidationLayers/demos/cube.c
---- vulkan-sdk-1.0.3.0.orig/Vulkan-LoaderAndValidationLayers/demos/cube.c	2016-02-22 22:02:54.000000000 +0100
-+++ vulkan-sdk-1.0.3.0/Vulkan-LoaderAndValidationLayers/demos/cube.c	2016-02-25 08:15:38.000000000 +0100
+diff -dur vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/cube.c vulkan-sdk-1.0.3.0/VulkanTools/demos/cube.c
+--- vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/cube.c	2016-02-22 22:02:54.000000000 +0100
++++ vulkan-sdk-1.0.3.0/VulkanTools/demos/cube.c	2016-02-25 08:15:38.000000000 +0100
 @@ -28,6 +28,8 @@
   * Author: Jon Ashburn <jon@lunarg.com>
   */
@@ -37,9 +37,9 @@ diff -dur vulkan-sdk-1.0.3.0.orig/Vulkan-LoaderAndValidationLayers/demos/cube.c 
  
      demo->frag_shader_module =
          demo_prepare_shader_module(demo, fragShaderCode, size);
-diff -dur vulkan-sdk-1.0.3.0.orig/Vulkan-LoaderAndValidationLayers/demos/tri.c vulkan-sdk-1.0.3.0/Vulkan-LoaderAndValidationLayers/demos/tri.c
---- vulkan-sdk-1.0.3.0.orig/Vulkan-LoaderAndValidationLayers/demos/tri.c	2016-02-22 22:02:54.000000000 +0100
-+++ vulkan-sdk-1.0.3.0/Vulkan-LoaderAndValidationLayers/demos/tri.c	2016-02-25 08:14:22.000000000 +0100
+diff -dur vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/tri.c vulkan-sdk-1.0.3.0/VulkanTools/demos/tri.c
+--- vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/tri.c	2016-02-22 22:02:54.000000000 +0100
++++ vulkan-sdk-1.0.3.0/VulkanTools/demos/tri.c	2016-02-25 08:14:22.000000000 +0100
 @@ -35,6 +35,8 @@
   * should.  It also does no error checking.
   */
