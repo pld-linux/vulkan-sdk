@@ -13,23 +13,23 @@
 %undefine       with_icd
 %endif
 
-%define	api_version 1.0.5
+%define	api_version 1.0.8
 %define llvm_version	3.4.2
 
-%define snap	20160312
-# sdk-1.0.5 branch
-%define tools_commit	f69ba448ea3a56f5104535636e27b8b8ab543455
+%define snap	2016012
+# sdk-1.0.8 branch
+%define tools_commit	0ee123463a4ea5878aea9f6884830baecfd56d24
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	7
+%define	rel	0.1
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
-Version:	1.0.5.0
+Version:	1.0.8.0
 Release:	0.s%{snap}.%{rel}
 License:	MIT-like
 Group:		Development
 Source0:	https://github.com/LunarG/VulkanTools/archive/%{tools_commit}/VulkanTools-s%{snap}.tar.gz
-# Source0-md5:	dab7bc3a32918a3e124a379b338f9ed2
+# Source0-md5:	ff6af5dbcc3bb2354a8e336dd03c18bb
 Source1:	https://github.com/LunarG/LunarGLASS/archive/%{lg_commit}/LunarGLASS-%{snap}.tar.gz
 # Source1-md5:	b0fb3253c782e1e539a5884dde8a31f8
 Source2:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.gz
@@ -45,19 +45,19 @@ BuildRequires:	bison
 %{?with_icd:BuildRequires:  clang}
 BuildRequires:	cmake
 BuildRequires:	GLM
-BuildRequires:	glslang >= 3.0.s20160307
-BuildRequires:	glslang-devel >= 3.0.s20160307
+BuildRequires:	glslang >= 3.0.s20160325
+BuildRequires:	glslang-devel >= 3.0.s20160325
 BuildRequires:	graphviz
 BuildRequires:	ImageMagick-devel
 BuildRequires:	libpng
 BuildRequires:	libxcb-devel
 BuildRequires:	python3
 BuildRequires:	python3-modules
-BuildRequires:	spirv-tools-devel >= 1.0_rev3.s20160312
+BuildRequires:	spirv-tools-devel >= 1.0_rev3.s20160329
 BuildRequires:	udev-devel
 %{?with_icd:BuildRequires:	xorg-lib-libpciaccess-devel}
-Requires:	glslang >= 3.0.s20160307
-Requires:	spirv-tools >= 1.0_rev3.s20160312
+Requires:	glslang >= 3.0.s20160325
+Requires:	spirv-tools >= 1.0_rev3.s20160329
 Requires:	%{name}-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
