@@ -266,7 +266,7 @@ cp -p vktrace/vktrace32 $RPM_BUILD_ROOT%{_bindir}
 rm $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
 sed -e's@"library_path": "../vktrace/@"library_path": "%{_libdir}/vulkan/layer/@' \
     -e's@libVkLayer_vktrace_layer.so@libVkLayer_vktrace_layer32.so@' \
-	layers/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
+	layersvt/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
 %endif
 
 %if %{with icd}
