@@ -51,6 +51,7 @@ BuildRequires:	ImageMagick-devel
 BuildRequires:	libpng
 BuildRequires:	libxcb-devel
 BuildRequires:	python3
+BuildRequires:	python3-lxml
 BuildRequires:	python3-modules
 BuildRequires:	spirv-tools-devel >= 1.0_rev3.s20160329
 BuildRequires:	udev-devel
