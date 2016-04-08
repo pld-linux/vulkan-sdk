@@ -1,13 +1,10 @@
 #
-# TODO:
-#	- update wayland patch so Wayland can be included together with XCB
-#	again
-#
 # Conditional build:
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
 %bcond_with	icd		# build experimental Vulkan drivers
-%bcond_with	wayland		# enable Wayland support in loader
+%bcond_without	wayland		# enable Wayland support in loader
+%bcond_without	xlib		# enable XLib support in loader
 
 %ifnarch %{x8664}
 %undefine       with_icd
@@ -21,7 +18,7 @@
 %define tools_commit	0ee123463a4ea5878aea9f6884830baecfd56d24
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	0.1
+%define	rel	1
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.8.0
@@ -34,11 +31,13 @@ Source1:	https://github.com/LunarG/LunarGLASS/archive/%{lg_commit}/LunarGLASS-%{
 # Source1-md5:	b0fb3253c782e1e539a5884dde8a31f8
 Source2:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.gz
 # Source2-md5:	a20669f75967440de949ac3b1bad439c
-Patch0:		system_glslang.patch
-Patch1:		LunarGLASS-CMakeLists.patch
-Patch2:		demos_out_of_src.patch
-Patch3:		rpath.patch
-Patch4:		wayland.patch
+Patch0:		system_glslang_and_spirv-tools.patch
+Patch1:		demos_out_of_src.patch
+Patch2:		rpath.patch
+Patch3:		always_xcb.patch
+Patch4:		vktrace_wayland.patch
+# LunarGLASS patches
+Patch100:	LunarGLASS-CMakeLists.patch
 URL:		http://lunarg.com/vulkan-sdk/
 %{?with_icd:BuildRequires:	Mesa-libGL-devel}
 BuildRequires:	bison
@@ -127,7 +126,7 @@ Vulkan tools.
 Summary:	Experimental Vulkan driver for Intel GPUs
 Group:		X11/Libraries
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.5
+Provides:	vulkan(icd) = 1.0.8
 
 %description icd-intel
 Experimental Vulkan driver for Intel GPUs.
@@ -136,7 +135,7 @@ Experimental Vulkan driver for Intel GPUs.
 Summary:	Dummy Vulkan driver
 Group:		X11/Libraries
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.5
+Provides:	vulkan(icd) = 1.0.8
 
 %description icd-nulldrv
 Dummy Vulkan driver.
@@ -147,9 +146,10 @@ Dummy Vulkan driver.
 mv VulkanTools-%{tools_commit} VulkanTools
 
 %patch0 -p1
+%patch1 -p1
 %patch2 -p1
 %patch3 -p1
-#%patch4 -p1
+%patch4 -p1
 
 %if %{with icd}
 mv LunarGLASS-%{lg_commit} LunarGLASS
@@ -158,7 +158,7 @@ tar -x --strip-components=1 --skip-old-files -f %{SOURCE3}
 cp -R ../../../../VulkanTools/LunarGLASS/* .
 cd ../../../..
 
-%patch1 -p1
+%patch100 -p1
 %endif
 
 %build
@@ -199,6 +199,7 @@ cd VulkanTools/build
 	-DCMAKE_INSTALL_SYSCONFDIR=etc \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
 	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
+	-DBUILD_WSI_XLIB_SUPPORT=%{?with_xlib:ON}%{!?with_xlib:OFF} \
 	-DBUILD_ICD=%{?with_icd:ON}%{!?with_icd:OFF} \
 		../
 %{__make}
@@ -224,18 +225,18 @@ $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/{explicit,implicit}_layer.d \
 cd VulkanTools/build
 %{__make} install
 
-cp -p loader/libvulkan.so.1.0.5 $RPM_BUILD_ROOT%{_libdir}
-ln -s libvulkan.so.1.0.5 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so
-ln -s libvulkan.so.1.0.5 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
+cp -p loader/libvulkan.so.1.0.8 $RPM_BUILD_ROOT%{_libdir}
+ln -s libvulkan.so.1.0.8 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so
+ln -s libvulkan.so.1.0.8 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
 
 cp -p demos/vulkaninfo $RPM_BUILD_ROOT%{_bindir}/vulkaninfo
 cp -p demos/tri $RPM_BUILD_ROOT%{_bindir}/vulkan-tri
 cp -p demos/cube $RPM_BUILD_ROOT%{_bindir}/vulkan-cube
-cp -p demos/smoke/smoke $RPM_BUILD_ROOT%{_bindir}/vulkan-smoke
+cp -p demos/smoketest $RPM_BUILD_ROOT%{_bindir}/vulkan-smoketest
 cp -p demos/{lunarg.ppm,*-vert.spv,*-frag.spv} $RPM_BUILD_ROOT%{_datadir}/%{name}-demos
 
 cp -p install_staging/*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
-for f in layers/*.json ; do
+for f in layers/*.json layersvt/*.json ; do
 sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
 done
 
@@ -248,19 +249,21 @@ cp -p ../include/vulkan/* $RPM_BUILD_ROOT%{_includedir}/vulkan
 cp -pr ../demos/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
 # restore original demo sources in %{_examplesdir}
-%patch2 -R -p3 -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
+%patch1 -R -p3 -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 rm -f $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*.orig 2>/dev/null || :
 
 %ifarch %x8664
 cp -p vktrace/libVkLayer_vktrace_layer.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
 cp -p vktrace/vkreplay $RPM_BUILD_ROOT%{_bindir}
 cp -p vktrace/vktrace $RPM_BUILD_ROOT%{_bindir}
+sed -e's@"library_path": "../vktrace/@"library_path": "%{_libdir}/vulkan/layer/@' \
+	layersvt/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
 %else
 cp -p vktrace/libVkLayer_vktrace_layer32.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
 cp -p vktrace/vkreplay32 $RPM_BUILD_ROOT%{_bindir}
 cp -p vktrace/vktrace32 $RPM_BUILD_ROOT%{_bindir}
 rm $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
-sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' \
+sed -e's@"library_path": "../vktrace/@"library_path": "%{_libdir}/vulkan/layer/@' \
     -e's@libVkLayer_vktrace_layer.so@libVkLayer_vktrace_layer32.so@' \
 	layers/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
 %endif
@@ -306,7 +309,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc VulkanTools/LICENSE.txt
 %attr(755,root,root) %{_bindir}/vulkan-cube
-%attr(755,root,root) %{_bindir}/vulkan-smoke
+%attr(755,root,root) %{_bindir}/vulkan-smoketest
 %attr(755,root,root) %{_bindir}/vulkan-tri
 %{_datadir}/%{name}-demos
 
@@ -333,22 +336,20 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc VulkanTools/LICENSE.txt
 %doc VulkanTools/layers/{README.md,vk_layer_settings.txt}
+%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_core_validation.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_device_limits.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_draw_state.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_image.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_mem_tracker.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_object_tracker.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_param_checker.so
+%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_parameter_validation.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_swapchain.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_threading.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_unique_objects.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/liblayer_utils.so
+%{_datadir}/vulkan/explicit_layer.d/VkLayer_core_validation.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_device_limits.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_draw_state.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_image.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_mem_tracker.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_object_tracker.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_param_checker.json
+%{_datadir}/vulkan/explicit_layer.d/VkLayer_parameter_validation.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_swapchain.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_threading.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_unique_objects.json
@@ -356,12 +357,13 @@ rm -rf $RPM_BUILD_ROOT
 %files debug-layers
 %defattr(644,root,root,755)
 %doc VulkanTools/LICENSE.txt
-%doc VulkanTools/layers/{README.md,vk_layer_settings.txt}
+%doc VulkanTools/layersvt/{README.md,vk_layer_settings.txt}
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_api_dump.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_basic.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_generic.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_multi.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_screenshot.so
+%attr(755,root,root) %{_libdir}/vulkan/layer/liblayer_utilsvt.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_api_dump.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_basic.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_generic.json

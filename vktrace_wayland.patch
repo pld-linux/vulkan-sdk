@@ -1,0 +1,41 @@
+diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp vulkan-sdk-1.0.8.0/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp
+--- vulkan-sdk-1.0.8.0.orig/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp	2016-04-07 18:04:06.000000000 +0200
++++ vulkan-sdk-1.0.8.0/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp	2016-04-08 18:01:49.000000000 +0200
+@@ -1507,7 +1507,36 @@
+     return result;
+ }
+ #endif
+-//TODO Wayland and Mir support
++#ifdef VK_USE_PLATFORM_WAYLAND_KHR
++VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateWaylandSurfaceKHR(
++    VkInstance                                  instance,
++    const VkWaylandSurfaceCreateInfoKHR*        pCreateInfo,
++    const VkAllocationCallbacks*                pAllocator,
++    VkSurfaceKHR*                               pSurface)
++{
++    VkResult result;
++
++    // TODO: Implement.
++
++    result = mid(instance)->instTable.CreateWaylandSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
++
++    return result;
++}
++
++VKTRACER_EXPORT VKAPI_ATTR VkBool32 VKAPI_CALL __HOOKED_vkGetPhysicalDeviceWaylandPresentationSupportKHR(
++    VkPhysicalDevice                            physicalDevice,
++    uint32_t                                    queueFamilyIndex,
++    struct wl_display*                          display)
++{
++    VkBool32 result;
++
++    // TODO: Implement.
++
++    result = mid(physicalDevice)->instTable.GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice, queueFamilyIndex, display);
++
++    return result;
++}
++#endif
+ 
+ /* TODO: Probably want to make this manual to get the result of the boolean and then check it on replay
+ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfaceSupportKHR(

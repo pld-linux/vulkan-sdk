@@ -1,0 +1,65 @@
+diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/CMakeLists.txt vulkan-sdk-1.0.8.0/VulkanTools/CMakeLists.txt
+--- vulkan-sdk-1.0.8.0.orig/VulkanTools/CMakeLists.txt	2016-04-07 18:04:06.000000000 +0200
++++ vulkan-sdk-1.0.8.0/VulkanTools/CMakeLists.txt	2016-04-08 17:29:12.705768040 +0200
+@@ -103,13 +103,14 @@
+ option(BUILD_VKTRACE "Build VkTrace" ON)
+ option(BUILD_VKJSON "Build vkjson" ON)
+ 
+-if (BUILD_ICD OR BUILD_TESTS)
+     find_program(GLSLANG_VALIDATOR NAMES glslangValidator
+-                 HINTS "${CMAKE_SOURCE_DIR}/../glslang/${BUILDTGT_DIR}/install/bin"
++                 HINTS "/usr/bin"
++                       "${CMAKE_SOURCE_DIR}/../glslang/${BUILDTGT_DIR}/install/bin"
+                        "${PROJECT_SOURCE_DIR}/../${BINDATA_DIR}" )
+ 
+-    find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "${CMAKE_SOURCE_DIR}/../glslang" DOC "Path to SPIRV/spirv.hpp")
+-    find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "${CMAKE_SOURCE_DIR}/../spirv-tools/include"
++    find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "/usr/include/glslang" "${CMAKE_SOURCE_DIR}/../glslang" DOC "Path to SPIRV/spirv.hpp")
++    find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "/usr/include"
++								   "${CMAKE_SOURCE_DIR}/../spirv-tools/include"
+                                                                    "${CMAKE_SOURCE_DIR}/../source/spirv-tools/include"
+                                                                    "${CMAKE_SOURCE_DIR}/../spirv-tools/external/include"
+                                                                    "${CMAKE_SOURCE_DIR}/../source/spirv-tools/external/include"
+@@ -122,8 +123,8 @@
+                                  "${CMAKE_SOURCE_DIR}/../glslang/${BUILDTGT_DIR}/SPIRV/Release" )
+         set (SPIRV_TOOLS_SEARCH_PATH "${CMAKE_SOURCE_DIR}/../spirv-tools/${BUILDTGT_DIR}/source/Release")
+     else()
+-        set (GLSLANG_SEARCH_PATH "${CMAKE_SOURCE_DIR}/../glslang/build/install/lib" "${CMAKE_SOURCE_DIR}/../x86_64/lib/glslang" )
+-        set (SPIRV_TOOLS_SEARCH_PATH "${CMAKE_SOURCE_DIR}/../spirv-tools/build/source" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
++        set (GLSLANG_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${CMAKE_SOURCE_DIR}/../glslang/build/install/lib" "${CMAKE_SOURCE_DIR}/../x86_64/lib/glslang" )
++	set (SPIRV_TOOLS_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${CMAKE_SOURCE_DIR}/../spirv-tools/build/source" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
+     endif()
+ 
+     find_library(GLSLANG_LIB NAMES glslang
+@@ -189,7 +190,6 @@
+         set (GLSLANG_LIBRARIES ${GLSLANG_LIB} ${OGLCompiler_LIB} ${OSDependent_LIB} ${SPIRV_LIB})
+         set (SPIRV_TOOLS_LIBRARIES ${SPIRV_TOOLS_LIB})
+     endif()
+-endif()
+ 
+ if (BUILD_ICD)
+     # Hard code our LunarGLASS path for now
+diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/demos/smoke/CMakeLists.txt vulkan-sdk-1.0.8.0/VulkanTools/demos/smoke/CMakeLists.txt
+--- vulkan-sdk-1.0.8.0.orig/VulkanTools/demos/smoke/CMakeLists.txt	2016-04-07 18:04:06.000000000 +0200
++++ vulkan-sdk-1.0.8.0/VulkanTools/demos/smoke/CMakeLists.txt	2016-04-08 17:29:00.568752815 +0200
+@@ -10,7 +10,7 @@
+ macro(glsl_to_spirv src)
+     add_custom_command(OUTPUT ${src}.h
+         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/glsl-to-spirv ${CMAKE_CURRENT_SOURCE_DIR}/${src} ${src}.h ${GLSLANG_VALIDATOR}
+-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/glsl-to-spirv ${CMAKE_CURRENT_SOURCE_DIR}/${src} ${GLSLANG_VALIDATOR}
++        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/glsl-to-spirv ${CMAKE_CURRENT_SOURCE_DIR}/${src}
+         )
+ endmacro()
+ 
+diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/demos/smoke/glsl-to-spirv vulkan-sdk-1.0.8.0/VulkanTools/demos/smoke/glsl-to-spirv
+--- vulkan-sdk-1.0.8.0.orig/VulkanTools/demos/smoke/glsl-to-spirv	2016-04-07 18:04:06.000000000 +0200
++++ vulkan-sdk-1.0.8.0/VulkanTools/demos/smoke/glsl-to-spirv	2016-04-08 17:29:00.568752815 +0200
+@@ -38,7 +38,7 @@
+ in_filename = sys.argv[1]
+ out_filename = sys.argv[2] if len(sys.argv) > 2 else None
+ validator = sys.argv[3] if len(sys.argv) > 3 else \
+-        "../../../glslang/build/install/bin/glslangValidator"
++        "glslangValidator"
+ 
+ def identifierize(s):
+     # translate invalid chars
