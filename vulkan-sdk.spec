@@ -18,7 +18,7 @@
 %define tools_commit	0ee123463a4ea5878aea9f6884830baecfd56d24
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
-%define	rel	2
+%define	rel	3
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.8.0
@@ -108,7 +108,7 @@ Pliki nagłówkowe API Vulkan.
 %package demos
 Summary:	Vulkan demos
 Group:		Development/Libraries
-%{?with_icd:Requires:	vulkan(icd)}
+Requires:	vulkan(icd)
 Requires:	vulkan-loader = %{version}-%{release}
 
 %description demos
