@@ -20,7 +20,7 @@
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
 Version:	1.0.17.0
-Release:	0.1
+Release:	1
 License:	MIT-like
 Group:		Development
 Source0:	https://github.com/LunarG/VulkanTools/archive/sdk-%{version}/VulkanTools-%{version}.tar.gz
