@@ -39,3 +39,25 @@ diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/vktrace/src/vktrace_layer/vktrace_
  
  /* TODO: Probably want to make this manual to get the result of the boolean and then check it on replay
  VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfaceSupportKHR(
+--- vulkan-sdk-1.0.17.0.orig/VulkanTools/vk_helper.py	2016-06-23 17:32:27.000000000 +0200
++++ vulkan-sdk-1.0.17.0/VulkanTools/vk_helper.py	2016-07-14 13:14:33.000000000 +0200
+@@ -1423,7 +1423,7 @@
+                     elif is_type(self.struct_dict[s][m]['type'], 'struct'):
+                         sh_funcs.append('%sstructSize += %s(pStruct->%s);' % (indent, self._get_size_helper_func_name(self.struct_dict[s][m]['type']), self.struct_dict[s][m]['name']))
+                     elif 'void' not in self.struct_dict[s][m]['type'].lower():
+-                        if (self.struct_dict[s][m]['type'] != 'xcb_connection_t'):
++                        if (self.struct_dict[s][m]['type'] not in ('xcb_connection_t', 'struct wl_display', 'struct wl_surface')):
+                             sh_funcs.append('%sstructSize += sizeof(%s);' % (indent, self.struct_dict[s][m]['type']))
+                 elif 'size_t' == self.struct_dict[s][m]['type'].lower():
+                     sh_funcs.append('%sstructSize += pStruct->%s;' % (indent, self.struct_dict[s][m]['name']))
+--- vulkan-sdk-1.0.17.0.orig/VulkanTools/vk_helper_api_dump.py	2016-06-23 17:32:27.000000000 +0200
++++ vulkan-sdk-1.0.17.0/VulkanTools/vk_helper_api_dump.py	2016-07-14 13:14:44.000000000 +0200
+@@ -1468,7 +1468,7 @@
+                     elif is_type(self.struct_dict[s][m]['type'], 'struct'):
+                         sh_funcs.append('%sstructSize += %s(pStruct->%s);' % (indent, self._get_size_helper_func_name(self.struct_dict[s][m]['type']), self.struct_dict[s][m]['name']))
+                     elif 'void' not in self.struct_dict[s][m]['type'].lower():
+-                        if (self.struct_dict[s][m]['type'] != 'xcb_connection_t'):
++                        if (self.struct_dict[s][m]['type'] not in ('xcb_connection_t', 'struct wl_display', 'struct wl_surface')):
+                             sh_funcs.append('%sstructSize += sizeof(%s);' % (indent, self.struct_dict[s][m]['type']))
+                 elif 'size_t' == self.struct_dict[s][m]['type'].lower():
+                     sh_funcs.append('%sstructSize += pStruct->%s;' % (indent, self.struct_dict[s][m]['name']))

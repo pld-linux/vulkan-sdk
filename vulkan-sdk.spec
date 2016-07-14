@@ -10,23 +10,21 @@
 %undefine       with_icd
 %endif
 
-%define	api_version 1.0.8
+%define	api_version 1.0.17
 %define llvm_version	3.4.2
 
 %define snap	2016012
-# sdk-1.0.8 branch
-%define tools_commit	0ee123463a4ea5878aea9f6884830baecfd56d24
 # master branch
 %define	lg_commit	0a73713f0d664aa97a7e359f567a16d7c3fce359
 %define	rel	3
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
-Version:	1.0.8.0
-Release:	0.s%{snap}.%{rel}
+Version:	1.0.17.0
+Release:	0.1
 License:	MIT-like
 Group:		Development
-Source0:	https://github.com/LunarG/VulkanTools/archive/%{tools_commit}/VulkanTools-s%{snap}.tar.gz
-# Source0-md5:	ff6af5dbcc3bb2354a8e336dd03c18bb
+Source0:	https://github.com/LunarG/VulkanTools/archive/sdk-%{version}/VulkanTools-%{version}.tar.gz
+# Source0-md5:	5f52f9f8309d40758f1238e517e7ef74
 Source1:	https://github.com/LunarG/LunarGLASS/archive/%{lg_commit}/LunarGLASS-%{snap}.tar.gz
 # Source1-md5:	b0fb3253c782e1e539a5884dde8a31f8
 Source2:	http://llvm.org/releases/%{llvm_version}/llvm-%{llvm_version}.src.tar.gz
@@ -44,8 +42,8 @@ BuildRequires:	bison
 %{?with_icd:BuildRequires:  clang}
 BuildRequires:	cmake
 BuildRequires:	GLM
-BuildRequires:	glslang >= 3.0.s20160325
-BuildRequires:	glslang-devel >= 3.0.s20160325
+BuildRequires:	glslang >= 3.0.s20160513
+BuildRequires:	glslang-devel >= 3.0.s20160513
 BuildRequires:	graphviz
 BuildRequires:	ImageMagick-devel
 BuildRequires:	libpng
@@ -53,11 +51,11 @@ BuildRequires:	libxcb-devel
 BuildRequires:	python3
 BuildRequires:	python3-lxml
 BuildRequires:	python3-modules
-BuildRequires:	spirv-tools-devel >= 1.0_rev3.s20160329
+BuildRequires:	spirv-tools-devel >= 1.0_rev3.s20160614
 BuildRequires:	udev-devel
 %{?with_icd:BuildRequires:	xorg-lib-libpciaccess-devel}
-Requires:	glslang >= 3.0.s20160325
-Requires:	spirv-tools >= 1.0_rev3.s20160329
+Requires:	glslang >= 3.0.s20160513
+Requires:	spirv-tools >= 1.0_rev3.s20160614
 Requires:	%{name}-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
@@ -127,7 +125,7 @@ Vulkan tools.
 Summary:	Experimental Vulkan driver for Intel GPUs
 Group:		X11/Libraries
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.8
+Provides:	vulkan(icd) = 1.0.17
 
 %description icd-intel
 Experimental Vulkan driver for Intel GPUs.
@@ -136,7 +134,7 @@ Experimental Vulkan driver for Intel GPUs.
 Summary:	Dummy Vulkan driver
 Group:		X11/Libraries
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.8
+Provides:	vulkan(icd) = 1.0.17
 
 %description icd-nulldrv
 Dummy Vulkan driver.
@@ -144,7 +142,7 @@ Dummy Vulkan driver.
 %prep
 %setup -q -c %{?with_icd:-a1}
 
-mv VulkanTools-%{tools_commit} VulkanTools
+mv VulkanTools-sdk-%{version} VulkanTools
 
 %patch0 -p1
 %patch1 -p1
@@ -226,9 +224,9 @@ $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/{explicit,implicit}_layer.d \
 cd VulkanTools/build
 %{__make} install
 
-cp -p loader/libvulkan.so.1.0.8 $RPM_BUILD_ROOT%{_libdir}
-ln -s libvulkan.so.1.0.8 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so
-ln -s libvulkan.so.1.0.8 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
+cp -p loader/libvulkan.so.1.0.17 $RPM_BUILD_ROOT%{_libdir}
+ln -s libvulkan.so.1.0.17 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so
+ln -s libvulkan.so.1.0.17 $RPM_BUILD_ROOT%{_libdir}/libvulkan.so.1
 
 cp -p demos/vulkaninfo $RPM_BUILD_ROOT%{_bindir}/vulkaninfo
 cp -p demos/tri $RPM_BUILD_ROOT%{_bindir}/vulkan-tri
@@ -345,7 +343,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_swapchain.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_threading.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_unique_objects.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/liblayer_utils.so
+%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_utils.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_core_validation.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_device_limits.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_image.json
@@ -364,7 +362,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_generic.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_multi.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_screenshot.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/liblayer_utilsvt.so
+%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_utilsvt.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_api_dump.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_basic.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_generic.json
