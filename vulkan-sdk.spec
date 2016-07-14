@@ -238,6 +238,7 @@ cp -p install_staging/*.so $RPM_BUILD_ROOT%{_libdir}/vulkan/layer
 for f in layers/*.json layersvt/*.json ; do
 sed -e's@"library_path": "./@"library_path": "%{_libdir}/vulkan/layer/@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
 done
+mv $RPM_BUILD_ROOT%{_libdir}/vulkan/layer/libVkLayer_utils* $RPM_BUILD_ROOT%{_libdir}
 
 cp -p libs/vkjson/libvkjson.a $RPM_BUILD_ROOT%{_libdir}
 cp -p libs/vkjson/vkjson_{info,unittest} $RPM_BUILD_ROOT%{_bindir}
@@ -343,7 +344,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_swapchain.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_threading.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_unique_objects.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_utils.so
+%attr(755,root,root) %{_libdir}/libVkLayer_utils.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_core_validation.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_device_limits.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_image.json
@@ -362,7 +363,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_generic.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_multi.so
 %attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_screenshot.so
-%attr(755,root,root) %{_libdir}/vulkan/layer/libVkLayer_utilsvt.so
+%attr(755,root,root) %{_libdir}/libVkLayer_utilsvt.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_api_dump.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_basic.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_generic.json
