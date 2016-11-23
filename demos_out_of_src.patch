@@ -1,25 +1,25 @@
-diff -dur vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/cube.c vulkan-sdk-1.0.3.0/VulkanTools/demos/cube.c
---- vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/cube.c	2016-02-22 22:02:54.000000000 +0100
-+++ vulkan-sdk-1.0.3.0/VulkanTools/demos/cube.c	2016-02-25 08:15:38.000000000 +0100
-@@ -28,6 +28,8 @@
-  * Author: Jon Ashburn <jon@lunarg.com>
-  */
+diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/cube.c VulkanTools-sdk-1.0.32.0/demos/cube.c
+--- VulkanTools-sdk-1.0.32.0.orig/demos/cube.c	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/demos/cube.c	2016-11-23 14:16:34.000000000 +0100
+@@ -23,6 +23,8 @@
+ * Author: Tony Barbour <tony@LunarG.com>
+ */
  
 +#define DEMO_DATA_DIR "/usr/share/vulkan-sdk-demos"
 +
  #define _GNU_SOURCE
  #include <stdio.h>
  #include <stdlib.h>
-@@ -115,7 +117,7 @@
+@@ -134,7 +136,7 @@
      int32_t tex_width, tex_height;
  };
  
 -static char *tex_files[] = {"lunarg.ppm"};
 +static char *tex_files[] = {DEMO_DATA_DIR "/lunarg.ppm"};
  
- struct vkcube_vs_uniform {
-     // Must start with MVP
-@@ -1478,7 +1480,7 @@
+ static int validation_error = 0;
+ 
+@@ -1662,7 +1664,7 @@
      void *vertShaderCode;
      size_t size;
  
@@ -28,42 +28,12 @@ diff -dur vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/cube.c vulkan-sdk-1.0.3.0/Vu
  
      demo->vert_shader_module =
          demo_prepare_shader_module(demo, vertShaderCode, size);
-@@ -1492,7 +1494,7 @@
+@@ -1687,7 +1689,7 @@
      void *fragShaderCode;
      size_t size;
  
 -    fragShaderCode = demo_read_spv("cube-frag.spv", &size);
 +    fragShaderCode = demo_read_spv(DEMO_DATA_DIR "/cube-frag.spv", &size);
- 
-     demo->frag_shader_module =
-         demo_prepare_shader_module(demo, fragShaderCode, size);
-diff -dur vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/tri.c vulkan-sdk-1.0.3.0/VulkanTools/demos/tri.c
---- vulkan-sdk-1.0.3.0.orig/VulkanTools/demos/tri.c	2016-02-22 22:02:54.000000000 +0100
-+++ vulkan-sdk-1.0.3.0/VulkanTools/demos/tri.c	2016-02-25 08:14:22.000000000 +0100
-@@ -35,6 +35,8 @@
-  * should.  It also does no error checking.
-  */
- 
-+#define DEMO_DATA_DIR "/usr/share/vulkan-sdk-demos"
-+
- #ifndef _MSC_VER
- #define _ISOC11_SOURCE /* for aligned_alloc() */
- #endif
-@@ -1229,7 +1231,7 @@
-     void *vertShaderCode;
-     size_t size;
- 
--    vertShaderCode = demo_read_spv("tri-vert.spv", &size);
-+    vertShaderCode = demo_read_spv(DEMO_DATA_DIR "/tri-vert.spv", &size);
- 
-     demo->vert_shader_module =
-         demo_prepare_shader_module(demo, vertShaderCode, size);
-@@ -1243,7 +1245,7 @@
-     void *fragShaderCode;
-     size_t size;
- 
--    fragShaderCode = demo_read_spv("tri-frag.spv", &size);
-+    fragShaderCode = demo_read_spv(DEMO_DATA_DIR "/tri-frag.spv", &size);
  
      demo->frag_shader_module =
          demo_prepare_shader_module(demo, fragShaderCode, size);

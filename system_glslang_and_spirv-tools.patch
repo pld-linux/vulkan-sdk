@@ -1,7 +1,7 @@
-diff -dur -x '*.orig' -x '*.rej' -x '*~' vulkan-sdk-1.0.17.0.orig/VulkanTools/CMakeLists.txt vulkan-sdk-1.0.17.0/VulkanTools/CMakeLists.txt
---- vulkan-sdk-1.0.17.0.orig/VulkanTools/CMakeLists.txt	2016-06-23 17:32:27.000000000 +0200
-+++ vulkan-sdk-1.0.17.0/VulkanTools/CMakeLists.txt	2016-07-14 10:51:13.000000000 +0200
-@@ -162,7 +162,7 @@
+diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/CMakeLists.txt VulkanTools-sdk-1.0.32.0/CMakeLists.txt
+--- VulkanTools-sdk-1.0.32.0.orig/CMakeLists.txt	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/CMakeLists.txt	2016-11-23 14:15:38.000000000 +0100
+@@ -189,7 +189,7 @@
  else()
      #non windows
      if(CUSTOM_GLSLANG_BIN_ROOT)
@@ -10,7 +10,7 @@ diff -dur -x '*.orig' -x '*.rej' -x '*~' vulkan-sdk-1.0.17.0.orig/VulkanTools/CM
                                   "${GLSLANG_BINARY_ROOT}/glslang"
                                   "${GLSLANG_BINARY_ROOT}/glslang/OSDependent/Unix"
                                   "${GLSLANG_BINARY_ROOT}/OGLCompilersDLL"
-@@ -170,26 +170,27 @@
+@@ -197,26 +197,27 @@
                                   "${GLSLANG_BINARY_ROOT}/hlsl"
                                   "${GLSLANG_BINARY_ROOT}/StandAlone")
      else()
@@ -43,9 +43,9 @@ diff -dur -x '*.orig' -x '*.rej' -x '*~' vulkan-sdk-1.0.17.0.orig/VulkanTools/CM
                                                     "${EXTERNAL_SOURCE_ROOT}/SPIRV-Tools/include"
                                                     "${CMAKE_SOURCE_DIR}/../spirv-tools/include"
                                                     "${CMAKE_SOURCE_DIR}/../SPIRV-Tools/include"
-diff -dur -x '*.orig' -x '*.rej' -x '*~' vulkan-sdk-1.0.17.0.orig/VulkanTools/demos/smoke/CMakeLists.txt vulkan-sdk-1.0.17.0/VulkanTools/demos/smoke/CMakeLists.txt
---- vulkan-sdk-1.0.17.0.orig/VulkanTools/demos/smoke/CMakeLists.txt	2016-06-23 17:32:27.000000000 +0200
-+++ vulkan-sdk-1.0.17.0/VulkanTools/demos/smoke/CMakeLists.txt	2016-07-14 10:47:42.000000000 +0200
+diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/smoke/CMakeLists.txt VulkanTools-sdk-1.0.32.0/demos/smoke/CMakeLists.txt
+--- VulkanTools-sdk-1.0.32.0.orig/demos/smoke/CMakeLists.txt	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/demos/smoke/CMakeLists.txt	2016-11-23 14:15:38.000000000 +0100
 @@ -10,7 +10,7 @@
  macro(glsl_to_spirv src)
      add_custom_command(OUTPUT ${src}.h
@@ -55,8 +55,9 @@ diff -dur -x '*.orig' -x '*.rej' -x '*~' vulkan-sdk-1.0.17.0.orig/VulkanTools/de
          )
  endmacro()
  
---- vulkan-sdk-1.0.17.0.orig/VulkanTools/demos/smoke/glsl-to-spirv	2016-06-23 17:32:27.000000000 +0200
-+++ vulkan-sdk-1.0.17.0/VulkanTools/demos/smoke/glsl-to-spirv	2016-07-14 10:47:42.000000000 +0200
+diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/smoke/glsl-to-spirv VulkanTools-sdk-1.0.32.0/demos/smoke/glsl-to-spirv
+--- VulkanTools-sdk-1.0.32.0.orig/demos/smoke/glsl-to-spirv	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/demos/smoke/glsl-to-spirv	2016-11-23 14:15:38.000000000 +0100
 @@ -32,7 +32,7 @@
  in_filename = sys.argv[1]
  out_filename = sys.argv[2] if len(sys.argv) > 2 else None

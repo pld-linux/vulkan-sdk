@@ -1,11 +1,53 @@
-diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp vulkan-sdk-1.0.8.0/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp
---- vulkan-sdk-1.0.8.0.orig/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp	2016-04-07 18:04:06.000000000 +0200
-+++ vulkan-sdk-1.0.8.0/VulkanTools/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp	2016-04-08 18:01:49.000000000 +0200
-@@ -1507,7 +1507,36 @@
-     return result;
- }
+diff -dur -x '*.orig' -x '*.rej' -x '*~' VulkanTools-sdk-1.0.32.0.orig/api_dump_generator.py VulkanTools-sdk-1.0.32.0/api_dump_generator.py
+--- VulkanTools-sdk-1.0.32.0.orig/api_dump_generator.py	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/api_dump_generator.py	2016-11-23 14:38:41.000000000 +0100
+@@ -676,7 +676,7 @@
+ }}
+ """
+ 
+-POINTER_TYPES = ['void', 'xcb_connection_t', 'Display', 'SECURITY_ATTRIBUTES', 'ANativeWindow']
++POINTER_TYPES = ['void', 'xcb_connection_t', 'Display', 'SECURITY_ATTRIBUTES', 'ANativeWindow', 'wl_surface', 'wl_display']
+ VALIDITY_CHECKS = {
+     'VkBufferCreateInfo': {
+         'pQueueFamilyIndices': 'object.sharingMode == VK_SHARING_MODE_CONCURRENT',
+@@ -1433,4 +1433,4 @@
+         return {
+             'unName': self.name,
+         }
+-            
+\ No newline at end of file
++            
+diff -dur -x '*.orig' -x '*.rej' -x '*~' VulkanTools-sdk-1.0.32.0.orig/vk_helper_api_dump.py VulkanTools-sdk-1.0.32.0/vk_helper_api_dump.py
+--- VulkanTools-sdk-1.0.32.0.orig/vk_helper_api_dump.py	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/vk_helper_api_dump.py	2016-11-23 14:45:42.000000000 +0100
+@@ -1468,7 +1468,7 @@
+                     elif is_type(self.struct_dict[s][m]['type'], 'struct'):
+                         sh_funcs.append('%sstructSize += %s(pStruct->%s);' % (indent, self._get_size_helper_func_name(self.struct_dict[s][m]['type']), self.struct_dict[s][m]['name']))
+                     elif 'void' not in self.struct_dict[s][m]['type'].lower():
+-                        if (self.struct_dict[s][m]['type'] != 'xcb_connection_t'):
++                        if (self.struct_dict[s][m]['type'] not in ('xcb_connection_t', 'struct wl_display', 'struct wl_surface')):
+                             sh_funcs.append('%sstructSize += sizeof(%s);' % (indent, self.struct_dict[s][m]['type']))
+                 elif 'size_t' == self.struct_dict[s][m]['type'].lower():
+                     sh_funcs.append('%sstructSize += pStruct->%s;' % (indent, self.struct_dict[s][m]['name']))
+diff -dur -x '*.orig' -x '*.rej' -x '*~' VulkanTools-sdk-1.0.32.0.orig/vk_helper.py VulkanTools-sdk-1.0.32.0/vk_helper.py
+--- VulkanTools-sdk-1.0.32.0.orig/vk_helper.py	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/vk_helper.py	2016-11-23 14:45:42.000000000 +0100
+@@ -1424,7 +1424,7 @@
+                     elif is_type(self.struct_dict[s][m]['type'], 'struct'):
+                         sh_funcs.append('%sstructSize += %s(pStruct->%s);' % (indent, self._get_size_helper_func_name(self.struct_dict[s][m]['type']), self.struct_dict[s][m]['name']))
+                     elif 'void' not in self.struct_dict[s][m]['type'].lower():
+-                        if (self.struct_dict[s][m]['type'] != 'xcb_connection_t'):
++                        if (self.struct_dict[s][m]['type'] not in ('xcb_connection_t', 'struct wl_display', 'struct wl_surface')):
+                             sh_funcs.append('%sstructSize += sizeof(%s);' % (indent, self.struct_dict[s][m]['type']))
+                 elif 'size_t' == self.struct_dict[s][m]['type'].lower():
+                     sh_funcs.append('%sstructSize += pStruct->%s;' % (indent, self.struct_dict[s][m]['name']))
+diff -dur -x '*.orig' -x '*.rej' -x '*~' VulkanTools-sdk-1.0.32.0.orig/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp VulkanTools-sdk-1.0.32.0/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp
+--- VulkanTools-sdk-1.0.32.0.orig/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/vktrace/src/vktrace_layer/vktrace_lib_trace.cpp	2016-11-23 14:45:42.000000000 +0100
+@@ -1885,6 +1885,36 @@
  #endif
--//TODO Wayland and Mir support
+ 
+ //TODO Wayland and Mir support
 +#ifdef VK_USE_PLATFORM_WAYLAND_KHR
 +VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateWaylandSurfaceKHR(
 +    VkInstance                                  instance,
@@ -39,25 +81,3 @@ diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/vktrace/src/vktrace_layer/vktrace_
  
  /* TODO: Probably want to make this manual to get the result of the boolean and then check it on replay
  VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfaceSupportKHR(
---- vulkan-sdk-1.0.17.0.orig/VulkanTools/vk_helper.py	2016-06-23 17:32:27.000000000 +0200
-+++ vulkan-sdk-1.0.17.0/VulkanTools/vk_helper.py	2016-07-14 13:14:33.000000000 +0200
-@@ -1423,7 +1423,7 @@
-                     elif is_type(self.struct_dict[s][m]['type'], 'struct'):
-                         sh_funcs.append('%sstructSize += %s(pStruct->%s);' % (indent, self._get_size_helper_func_name(self.struct_dict[s][m]['type']), self.struct_dict[s][m]['name']))
-                     elif 'void' not in self.struct_dict[s][m]['type'].lower():
--                        if (self.struct_dict[s][m]['type'] != 'xcb_connection_t'):
-+                        if (self.struct_dict[s][m]['type'] not in ('xcb_connection_t', 'struct wl_display', 'struct wl_surface')):
-                             sh_funcs.append('%sstructSize += sizeof(%s);' % (indent, self.struct_dict[s][m]['type']))
-                 elif 'size_t' == self.struct_dict[s][m]['type'].lower():
-                     sh_funcs.append('%sstructSize += pStruct->%s;' % (indent, self.struct_dict[s][m]['name']))
---- vulkan-sdk-1.0.17.0.orig/VulkanTools/vk_helper_api_dump.py	2016-06-23 17:32:27.000000000 +0200
-+++ vulkan-sdk-1.0.17.0/VulkanTools/vk_helper_api_dump.py	2016-07-14 13:14:44.000000000 +0200
-@@ -1468,7 +1468,7 @@
-                     elif is_type(self.struct_dict[s][m]['type'], 'struct'):
-                         sh_funcs.append('%sstructSize += %s(pStruct->%s);' % (indent, self._get_size_helper_func_name(self.struct_dict[s][m]['type']), self.struct_dict[s][m]['name']))
-                     elif 'void' not in self.struct_dict[s][m]['type'].lower():
--                        if (self.struct_dict[s][m]['type'] != 'xcb_connection_t'):
-+                        if (self.struct_dict[s][m]['type'] not in ('xcb_connection_t', 'struct wl_display', 'struct wl_surface')):
-                             sh_funcs.append('%sstructSize += sizeof(%s);' % (indent, self.struct_dict[s][m]['type']))
-                 elif 'size_t' == self.struct_dict[s][m]['type'].lower():
-                     sh_funcs.append('%sstructSize += pStruct->%s;' % (indent, self.struct_dict[s][m]['name']))

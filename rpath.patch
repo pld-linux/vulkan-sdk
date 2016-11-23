@@ -1,7 +1,7 @@
-diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/layersvt/CMakeLists.txt vulkan-sdk-1.0.8.0/VulkanTools/layersvt/CMakeLists.txt
---- vulkan-sdk-1.0.8.0.orig/VulkanTools/layersvt/CMakeLists.txt	2016-04-07 18:04:06.000000000 +0200
-+++ vulkan-sdk-1.0.8.0/VulkanTools/layersvt/CMakeLists.txt	2016-04-08 18:41:00.779467329 +0200
-@@ -23,7 +23,7 @@
+diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/layersvt/CMakeLists.txt VulkanTools-sdk-1.0.32.0/layersvt/CMakeLists.txt
+--- VulkanTools-sdk-1.0.32.0.orig/layersvt/CMakeLists.txt	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/layersvt/CMakeLists.txt	2016-11-23 14:18:09.000000000 +0100
+@@ -30,7 +30,7 @@
      VkLayer_screenshot
      )
  
@@ -9,4 +9,4 @@ diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/layersvt/CMakeLists.txt vulkan-sdk
 +set(VK_LAYER_RPATH "${CMAKE_INSTALL_LIBDIR}/vulkan/layer")
  set(CMAKE_INSTALL_RPATH ${VK_LAYER_RPATH})
  
- if (NOT WIN32)
+ if (WIN32)

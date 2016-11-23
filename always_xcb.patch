@@ -1,11 +1,11 @@
-diff -dur vulkan-sdk-1.0.8.0.orig/VulkanTools/CMakeLists.txt vulkan-sdk-1.0.8.0/VulkanTools/CMakeLists.txt
---- vulkan-sdk-1.0.8.0.orig/VulkanTools/CMakeLists.txt	2016-04-08 17:38:54.448725526 +0200
-+++ vulkan-sdk-1.0.8.0/VulkanTools/CMakeLists.txt	2016-04-08 17:39:26.630546234 +0200
-@@ -44,6 +44,7 @@
-         add_definitions(-DVK_USE_PLATFORM_MIR_KHR)
-         set(DisplayServer Mir)
+diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/CMakeLists.txt VulkanTools-sdk-1.0.32.0/CMakeLists.txt
+--- VulkanTools-sdk-1.0.32.0.orig/CMakeLists.txt	2016-11-23 14:19:14.000000000 +0100
++++ VulkanTools-sdk-1.0.32.0/CMakeLists.txt	2016-11-23 14:19:30.000000000 +0100
+@@ -186,6 +186,7 @@
+         set (SPIRV_TOOLS_SEARCH_PATH "${EXTERNAL_SOURCE_ROOT}/spirv-tools/${BUILDTGT_DIR}/source/${RELEASE_DECORATION}")
+         set (SPIRV_TOOLS_DEBUG_SEARCH_PATH "${EXTERNAL_SOURCE_ROOT}/spirv-tools/${BUILDTGT_DIR}/source/${DEBUG_DECORATION}")
      endif()
 +    set(DisplayServer Xcb)
  else()
-     message(FATAL_ERROR "Unsupported Platform!")
- endif()
+     #non windows
+     if(CUSTOM_GLSLANG_BIN_ROOT)
