@@ -20,6 +20,7 @@ Patch1:		demos_out_of_src.patch
 Patch2:		rpath.patch
 Patch3:		always_xcb.patch
 Patch4:		vktrace_wayland.patch
+Patch5:		x32.patch
 URL:		http://lunarg.com/vulkan-sdk/
 BuildRequires:	bison
 BuildRequires:	cmake
@@ -42,6 +43,7 @@ Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
 Requires:	vulkan-sdk-tools = %{version}-%{release}
 Requires:	%{name}-validation-layers = %{version}-%{release}
+ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -110,6 +112,7 @@ Vulkan tools.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 install -d build
