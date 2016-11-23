@@ -43,7 +43,6 @@ Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
 Requires:	vulkan-sdk-tools = %{version}-%{release}
 Requires:	%{name}-validation-layers = %{version}-%{release}
-ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
