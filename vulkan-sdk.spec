@@ -214,7 +214,11 @@ sed -e's@"library_path": "../vktrace/@"library_path": "@' \
 %endif
 
 install via/via $RPM_BUILD_ROOT%{_bindir}
+%ifarch %x8664
 install vktrace/vktraceviewer $RPM_BUILD_ROOT%{_bindir}
+%else
+install vktrace/vktraceviewer32 $RPM_BUILD_ROOT%{_bindir}
+%endif
 
 cd ..
 
@@ -274,7 +278,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files tools-vktraceviewer
 %defattr(644,root,root,755)
+%ifarch %x8664
 %attr(755,root,root) %{_bindir}/vktraceviewer
+%else
+%attr(755,root,root) %{_bindir}/vktraceviewer32
+%endif
 
 %files validation-layers
 %defattr(644,root,root,755)
