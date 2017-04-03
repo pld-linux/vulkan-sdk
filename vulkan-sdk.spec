@@ -1,43 +1,51 @@
 #
+# TODO:
+#	- investigate why vktrace does not work
+
+
 # Conditional build:
 %bcond_with	tests		# build with tests (require a working Vulkan
 				# driver (ICD))
 %bcond_without	wayland		# enable Wayland support in loader
 %bcond_without	xlib		# enable XLib support in loader
 
-%define	api_version 1.0.32
+%define	api_version 1.0.39
 
 Summary:	LunarG Vulkan SDK
 Name:		vulkan-sdk
-Version:	1.0.32.0
+Version:	1.0.39.1
 Release:	1
 License:	MIT-like
 Group:		Development
 Source0:	https://github.com/LunarG/VulkanTools/archive/sdk-%{version}/VulkanTools-%{version}.tar.gz
-# Source0-md5:	83679b56e7782b1f61b4b86de98fb81b
+# Source0-md5:	62446dfd61208771d39109218cb29152
 Patch0:		system_glslang_and_spirv-tools.patch
 Patch1:		demos_out_of_src.patch
 Patch2:		rpath.patch
 Patch3:		always_xcb.patch
-Patch4:		vktrace_wayland.patch
-Patch5:		x32.patch
+Patch4:		x32.patch
+Patch5:		system_jsoncpp.patch
 URL:		http://lunarg.com/vulkan-sdk/
 BuildRequires:	bison
 BuildRequires:	cmake
 BuildRequires:	GLM
-BuildRequires:	glslang >= 3.0.s20161029
-BuildRequires:	glslang-devel >= 3.0.s20161029
+BuildRequires:	glslang >= 3.0.s20161222
+BuildRequires:	glslang-devel >= 3.0.s20161222
 BuildRequires:	graphviz
 BuildRequires:	ImageMagick-devel
+BuildRequires:	jsoncpp-devel
 BuildRequires:	libpng
 BuildRequires:	libxcb-devel
 BuildRequires:	python3
 BuildRequires:	python3-lxml
 BuildRequires:	python3-modules
-BuildRequires:	spirv-tools-devel >= v2016.6.s20161027
+BuildRequires:	Qt5Core-devel
+BuildRequires:	Qt5Svg-devel
+BuildRequires:	Qt5Widgets-devel
+BuildRequires:	spirv-tools-devel >= v2016.7
 BuildRequires:	udev-devel
-Requires:	glslang >= 3.0.s20161029
-Requires:	spirv-tools >= v2016.6.s20161027
+Requires:	glslang >= 3.0.s20161222
+Requires:	spirv-tools >= v2016.7
 Requires:	%{name}-debug-layers = %{version}-%{release}
 Requires:	vulkan-devel = %{version}-%{release}
 Requires:	vulkan-loader = %{version}-%{release}
@@ -103,6 +111,14 @@ Requires:	vulkan-loader = %{version}-%{release}
 %description tools
 Vulkan tools.
 
+%package tools-vktraceviewer
+Summary:	Vulkan trace viewer
+Group:		Development
+Requires:	%{name}-tools = %{version}-%{release}
+
+%description tools-vktraceviewer
+Vulkan trace viewer.
+
 %prep
 %setup -qn VulkanTools-sdk-%{version}
 
@@ -118,11 +134,14 @@ install -d build
 cd build
 
 %cmake \
+	-DJSONCPP_INCLUDE_DIR=/usr/include/jsoncpp \
+	-DJSONCPP_SOURCE_DIR=/usr/include/jsoncpp \
 	-DCMAKE_INSTALL_DATADIR=share \
 	-DCMAKE_INSTALL_SYSCONFDIR=etc \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
 	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
 	-DBUILD_WSI_XLIB_SUPPORT=%{?with_xlib:ON}%{!?with_xlib:OFF} \
+	-DBUILD_WSI_MIR_SUPPORT=OFF \
 	-DBUILD_ICD=OFF \
 		../
 %{__make}
@@ -139,7 +158,7 @@ cd ..
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/icd.d \
 $RPM_BUILD_ROOT{%{_datadir},%{_sysconfdir}}/vulkan/{explicit,implicit}_layer.d \
-	$RPM_BUILD_ROOT{%{_bindir},%{_libdir}/vulkan/layer} \
+	$RPM_BUILD_ROOT%{_bindir} \
 	$RPM_BUILD_ROOT%{_includedir}/vulkan \
 	$RPM_BUILD_ROOT%{_datadir}/%{name}-demos \
 	$RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
@@ -169,7 +188,7 @@ cp -p ../libs/vkjson/vkjson.h $RPM_BUILD_ROOT%{_includedir}
 
 cp -p install_staging/*.so $RPM_BUILD_ROOT%{_libdir}
 for f in layersvt/*.json ; do
-sed -e's@"library_path": "./@"library_path": "%{_libdir}/@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
+sed -e's@"library_path": "./@"library_path": "@' $f > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/$(basename $f)
 done
 
 cp -pr ../demos/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
@@ -182,17 +201,20 @@ rm -f $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*.orig 2>/dev/null || :
 cp -p vktrace/libVkLayer_vktrace_layer.so $RPM_BUILD_ROOT%{_libdir}
 cp -p vktrace/vkreplay $RPM_BUILD_ROOT%{_bindir}
 cp -p vktrace/vktrace $RPM_BUILD_ROOT%{_bindir}
-sed -e's@"library_path": "../vktrace/@"library_path": "%{_libdir}/@' \
+sed -e's@"library_path": "../vktrace/@"library_path": "@' \
 	layersvt/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
 %else
 cp -p vktrace/libVkLayer_vktrace_layer32.so $RPM_BUILD_ROOT%{_libdir}
 cp -p vktrace/vkreplay32 $RPM_BUILD_ROOT%{_bindir}
 cp -p vktrace/vktrace32 $RPM_BUILD_ROOT%{_bindir}
 rm $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer.json
-sed -e's@"library_path": "../vktrace/@"library_path": "%{_libdir}/@' \
+sed -e's@"library_path": "../vktrace/@"library_path": "@' \
     -e's@libVkLayer_vktrace_layer.so@libVkLayer_vktrace_layer32.so@' \
 	layersvt/VkLayer_vktrace_layer.json > $RPM_BUILD_ROOT%{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
 %endif
+
+install via/via $RPM_BUILD_ROOT%{_bindir}
+install vktrace/vktraceviewer $RPM_BUILD_ROOT%{_bindir}
 
 cd ..
 
@@ -222,8 +244,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vulkan/implicit_layer.d
 %{_libdir}/libvulkan.so.1.*.*
 %ghost %{_libdir}/libvulkan.so.1
-%dir %{_libdir}/vulkan
-%dir %{_libdir}/vulkan/layer
 
 %files demos
 %defattr(644,root,root,755)
@@ -236,6 +256,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc COPYRIGHT.txt LICENSE.txt
 %doc vktrace-README.md vktrace-TODO.md
+%attr(755,root,root) %{_bindir}/via
 %attr(755,root,root) %{_bindir}/vkjson_info
 %attr(755,root,root) %{_bindir}/vkjson_unittest
 %attr(755,root,root) %{_bindir}/vulkaninfo
@@ -250,6 +271,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libVkLayer_vktrace_layer32.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_vktrace_layer32.json
 %endif
+
+%files tools-vktraceviewer
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vktraceviewer
 
 %files validation-layers
 %defattr(644,root,root,755)
@@ -276,15 +301,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYRIGHT.txt LICENSE.txt
 %doc layersvt/{README.md,vk_layer_settings.txt}
 %attr(755,root,root) %{_libdir}/libVkLayer_api_dump.so
-%attr(755,root,root) %{_libdir}/libVkLayer_basic.so
-%attr(755,root,root) %{_libdir}/libVkLayer_generic.so
-%attr(755,root,root) %{_libdir}/libVkLayer_multi.so
+%attr(755,root,root) %{_libdir}/libVkLayer_monitor.so
 %attr(755,root,root) %{_libdir}/libVkLayer_screenshot.so
 %attr(755,root,root) %{_libdir}/libVkLayer_utilsvt.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_api_dump.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_basic.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_generic.json
-%{_datadir}/vulkan/explicit_layer.d/VkLayer_multi.json
+%{_datadir}/vulkan/explicit_layer.d/VkLayer_monitor.json
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_screenshot.json
 
 %files -n vulkan-devel

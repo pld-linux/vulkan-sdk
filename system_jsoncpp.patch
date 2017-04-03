@@ -1,0 +1,40 @@
+diff -dur -x '*~' -x '*.orig' -x '*.rej' VulkanTools-sdk-1.0.39.1.orig/CMakeLists.txt VulkanTools-sdk-1.0.39.1/CMakeLists.txt
+--- VulkanTools-sdk-1.0.39.1.orig/CMakeLists.txt	2017-04-03 10:45:27.000000000 +0200
++++ VulkanTools-sdk-1.0.39.1/CMakeLists.txt	2017-04-03 10:49:00.000000000 +0200
+@@ -200,20 +200,9 @@
+                                                    "${EXTERNAL_SOURCE_ROOT}/source/spirv-tools/external/include"
+                                              DOC "Path to spirv-tools/libspirv.h")
+ 
+-find_path(JSONCPP_INCLUDE_DIR json/json.h HINTS "${EXTERNAL_SOURCE_ROOT}/jsoncpp/dist"
+-                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCpp/dist"
+-                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCPP/dist"
+-                                                   "${EXTERNAL_SOURCE_ROOT}/JSONCPP/dist"
+-                                                   "${CMAKE_SOURCE_DIR}/../jsoncpp/dist"
++find_path(JSONCPP_INCLUDE_DIR json/json.h HINTS "/usr/include/jsoncpp"
+                                              DOC "Path to jsoncpp/dist/json/json.h")
+ 
+-find_path(JSONCPP_SOURCE_DIR jsoncpp.cpp HINTS "${EXTERNAL_SOURCE_ROOT}/jsoncpp/dist"
+-                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCpp/dist"
+-                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCPP/dist"
+-                                                   "${EXTERNAL_SOURCE_ROOT}/JSONCPP/dist"
+-                                                   "${CMAKE_SOURCE_DIR}/../jsoncpp/dist"
+-                                             DOC "Path to jsoncpp/dist/json.cpp")
+-
+     find_library(GLSLANG_LIB NAMES glslang
+         HINTS ${GLSLANG_SEARCH_PATH} )
+ 
+diff -dur -x '*~' -x '*.orig' -x '*.rej' VulkanTools-sdk-1.0.39.1.orig/via/CMakeLists.txt VulkanTools-sdk-1.0.39.1/via/CMakeLists.txt
+--- VulkanTools-sdk-1.0.39.1.orig/via/CMakeLists.txt	2017-02-03 00:57:55.000000000 +0100
++++ VulkanTools-sdk-1.0.39.1/via/CMakeLists.txt	2017-04-03 10:47:42.000000000 +0200
+@@ -60,9 +60,9 @@
+ 
+ endif()
+ 
+-add_executable(via via.cpp ${JSONCPP_SOURCE_DIR}/jsoncpp.cpp)
++add_executable(via via.cpp)
+ target_include_directories(via PUBLIC ${JSONCPP_INCLUDE_DIR})
+-target_link_libraries(via ${LIBRARIES})
++target_link_libraries(via ${LIBRARIES} ${JSONCPP_LIB})
+ if(WIN32)
+     target_link_libraries(via version)
+ endif()
