@@ -1,11 +1,15 @@
 diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/cube.c VulkanTools-sdk-1.0.32.0/demos/cube.c
 --- VulkanTools-sdk-1.0.32.0.orig/demos/cube.c	2016-11-10 18:52:27.000000000 +0100
 +++ VulkanTools-sdk-1.0.32.0/demos/cube.c	2016-11-23 14:16:34.000000000 +0100
-@@ -23,6 +23,8 @@
+@@ -23,6 +23,12 @@
  * Author: Tony Barbour <tony@LunarG.com>
  */
  
-+#define DEMO_DATA_DIR "/usr/share/vulkan-sdk-demos"
++#ifdef DATADIR
++#define DEMO_DATA_DIR DATADIR "/vulkan-sdk-demos/"
++#else
++#define DEMO_DATA_DIR
++#endif
 +
  #define _GNU_SOURCE
  #include <stdio.h>
@@ -15,7 +19,7 @@ diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/cube.c VulkanTools-sdk
  };
  
 -static char *tex_files[] = {"lunarg.ppm"};
-+static char *tex_files[] = {DEMO_DATA_DIR "/lunarg.ppm"};
++static char *tex_files[] = {DEMO_DATA_DIR "lunarg.ppm"};
  
  static int validation_error = 0;
  
@@ -24,7 +28,7 @@ diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/cube.c VulkanTools-sdk
      size_t size;
  
 -    vertShaderCode = demo_read_spv("cube-vert.spv", &size);
-+    vertShaderCode = demo_read_spv(DEMO_DATA_DIR "/cube-vert.spv", &size);
++    vertShaderCode = demo_read_spv(DEMO_DATA_DIR "cube-vert.spv", &size);
  
      demo->vert_shader_module =
          demo_prepare_shader_module(demo, vertShaderCode, size);
@@ -33,7 +37,7 @@ diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/cube.c VulkanTools-sdk
      size_t size;
  
 -    fragShaderCode = demo_read_spv("cube-frag.spv", &size);
-+    fragShaderCode = demo_read_spv(DEMO_DATA_DIR "/cube-frag.spv", &size);
++    fragShaderCode = demo_read_spv(DEMO_DATA_DIR "cube-frag.spv", &size);
  
      demo->frag_shader_module =
          demo_prepare_shader_module(demo, fragShaderCode, size);
