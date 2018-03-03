@@ -1,29 +1,27 @@
-diff -dur -x '*~' -x '*.orig' -x '*.rej' VulkanTools-sdk-1.0.39.1.orig/CMakeLists.txt VulkanTools-sdk-1.0.39.1/CMakeLists.txt
---- VulkanTools-sdk-1.0.39.1.orig/CMakeLists.txt	2017-04-03 10:45:27.000000000 +0200
-+++ VulkanTools-sdk-1.0.39.1/CMakeLists.txt	2017-04-03 10:49:00.000000000 +0200
-@@ -200,20 +200,9 @@
-                                                    "${EXTERNAL_SOURCE_ROOT}/source/spirv-tools/external/include"
-                                              DOC "Path to spirv-tools/libspirv.h")
+--- VulkanTools-sdk-1.0.68.0/CMakeLists.txt.orig	2018-03-03 13:20:34.570962288 +0100
++++ VulkanTools-sdk-1.0.68.0/CMakeLists.txt	2018-03-03 13:22:08.357627883 +0100
+@@ -127,19 +127,8 @@
+ # Define a variable for a default root location to the gslang, SPIRV-Tools and other external sources and cache it to allow the user to customize it as needed
+ set(SUBPROJECT_SOURCE_ROOT ${V_LVL_ROOT_DIR}/submodules CACHE STRING "Root path to VulkanTools submodule repositories")
  
--find_path(JSONCPP_INCLUDE_DIR json/json.h HINTS "${EXTERNAL_SOURCE_ROOT}/jsoncpp/dist"
--                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCpp/dist"
--                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCPP/dist"
--                                                   "${EXTERNAL_SOURCE_ROOT}/JSONCPP/dist"
+-find_path(JSONCPP_INCLUDE_DIR json/json.h HINTS "${SUBPROJECTS_DIR}/jsoncpp/dist"
+-                                                   "${SUBPROJECTS_DIR}/JsonCpp/dist"
+-                                                   "${SUBPROJECTS_DIR}/JsonCPP/dist"
+-                                                   "${SUBPROJECTS_DIR}/JSONCPP/dist"
 -                                                   "${CMAKE_SOURCE_DIR}/../jsoncpp/dist"
-+find_path(JSONCPP_INCLUDE_DIR json/json.h HINTS "/usr/include/jsoncpp"
-                                              DOC "Path to jsoncpp/dist/json/json.h")
- 
--find_path(JSONCPP_SOURCE_DIR jsoncpp.cpp HINTS "${EXTERNAL_SOURCE_ROOT}/jsoncpp/dist"
--                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCpp/dist"
--                                                   "${EXTERNAL_SOURCE_ROOT}/JsonCPP/dist"
--                                                   "${EXTERNAL_SOURCE_ROOT}/JSONCPP/dist"
+-                                             DOC "Path to jsoncpp/dist/json/json.h")
+-
+-find_path(JSONCPP_SOURCE_DIR jsoncpp.cpp HINTS "${SUBPROJECTS_DIR}/jsoncpp/dist"
+-                                                   "${SUBPROJECTS_DIR}/JsonCpp/dist"
+-                                                   "${SUBPROJECTS_DIR}/JsonCPP/dist"
+-                                                   "${SUBPROJECTS_DIR}/JSONCPP/dist"
 -                                                   "${CMAKE_SOURCE_DIR}/../jsoncpp/dist"
 -                                             DOC "Path to jsoncpp/dist/json.cpp")
--
-     find_library(GLSLANG_LIB NAMES glslang
-         HINTS ${GLSLANG_SEARCH_PATH} )
++find_path(JSONCPP_INCLUDE_DIR json/json.h HINTS "/usr/include/jsoncpp"
++                                            DOC "Path to jsoncpp/dist/json/json.h")
  
-diff -dur -x '*~' -x '*.orig' -x '*.rej' VulkanTools-sdk-1.0.39.1.orig/via/CMakeLists.txt VulkanTools-sdk-1.0.39.1/via/CMakeLists.txt
+ find_library(JSONCPP_LIB NAMES jsoncpp HINTS ${JSONCPP_SEARCH_PATH} )
+ 
 --- VulkanTools-sdk-1.0.39.1.orig/via/CMakeLists.txt	2017-02-03 00:57:55.000000000 +0100
 +++ VulkanTools-sdk-1.0.39.1/via/CMakeLists.txt	2017-04-03 10:47:42.000000000 +0200
 @@ -60,9 +60,9 @@
@@ -38,3 +36,28 @@ diff -dur -x '*~' -x '*.orig' -x '*.rej' VulkanTools-sdk-1.0.39.1.orig/via/CMake
  if(WIN32)
      target_link_libraries(via version)
  endif()
+--- VulkanTools-sdk-1.0.68.0/via/CMakeLists-SDK.txt.orig	2018-02-07 18:36:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/via/CMakeLists-SDK.txt	2018-03-03 13:54:26.184272423 +0100
+@@ -78,9 +78,9 @@
+     include_directories(${VK_INC_DIR})
+ endif()
+ 
+-add_executable(via via.cpp ${JSONCPP_SOURCE_DIR}/jsoncpp.cpp)
++add_executable(via via.cpp)
+ target_include_directories(via PUBLIC ${JSONCPP_INCLUDE_DIR})
+-target_link_libraries(via ${LIBRARIES})
++target_link_libraries(via jsoncpp ${LIBRARIES})
+ if(WIN32)
+     target_link_libraries(via version)
+ endif()
+--- VulkanTools-sdk-1.0.68.0/layersvt/CMakeLists.txt.orig	2018-03-03 13:26:18.177625031 +0100
++++ VulkanTools-sdk-1.0.68.0/layersvt/CMakeLists.txt	2018-03-03 13:51:28.387607788 +0100
+@@ -167,6 +167,7 @@
+ 
+ add_vk_layer(monitor monitor.cpp ${V_LVL_ROOT_DIR}/layers/vk_layer_table.cpp)
+ add_vk_layer(screenshot screenshot.cpp screenshot_parsing.h screenshot_parsing.cpp ${V_LVL_ROOT_DIR}/layers/vk_layer_table.cpp)
+-add_vk_layer(device_simulation device_simulation.cpp ${V_LVL_ROOT_DIR}/layers/vk_layer_table.cpp ${JSONCPP_SOURCE_DIR}/jsoncpp.cpp)
++add_vk_layer(device_simulation device_simulation.cpp ${V_LVL_ROOT_DIR}/layers/vk_layer_table.cpp)
++target_link_Libraries(VkLayer_device_simulation jsoncpp)
+ add_vk_layer(api_dump api_dump.cpp ${V_LVL_ROOT_DIR}/layers/vk_layer_table.cpp)
+ 

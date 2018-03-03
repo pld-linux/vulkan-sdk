@@ -1,51 +1,54 @@
-diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/CMakeLists.txt VulkanTools-sdk-1.0.32.0/CMakeLists.txt
---- VulkanTools-sdk-1.0.32.0.orig/CMakeLists.txt	2016-11-10 18:52:27.000000000 +0100
-+++ VulkanTools-sdk-1.0.32.0/CMakeLists.txt	2016-11-23 14:15:38.000000000 +0100
-@@ -189,7 +189,7 @@
- else()
-     #non windows
-     if(CUSTOM_GLSLANG_BIN_ROOT)
--        set (GLSLANG_SEARCH_PATH "${GLSLANG_BINARY_ROOT}/install/lib"
-+	set (GLSLANG_SEARCH_PATH "${GLSLANG_BINARY_ROOT}/install/lib"
-                                  "${GLSLANG_BINARY_ROOT}/glslang"
-                                  "${GLSLANG_BINARY_ROOT}/glslang/OSDependent/Unix"
-                                  "${GLSLANG_BINARY_ROOT}/OGLCompilersDLL"
-@@ -197,26 +197,27 @@
+--- VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/CMakeLists.txt.orig	2018-03-03 15:42:14.740865232 +0100
++++ VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/CMakeLists.txt	2018-03-03 15:42:18.627531852 +0100
+@@ -199,28 +199,29 @@
                                   "${GLSLANG_BINARY_ROOT}/hlsl"
                                   "${GLSLANG_BINARY_ROOT}/StandAlone")
      else()
 -        set (GLSLANG_SEARCH_PATH "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/install/lib" "${CMAKE_SOURCE_DIR}/../x86_64/lib/glslang" )
-+	set (GLSLANG_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/install/lib" "${CMAKE_SOURCE_DIR}/../x86_64/lib/glslang" )
++        set (GLSLANG_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/install/lib" "${CMAKE_SOURCE_DIR}/../x86_64/lib/glslang" )
      endif()
  
      if(CUSTOM_SPIRV_TOOLS_BIN_ROOT)
          set (SPIRV_TOOLS_SEARCH_PATH "${SPIRV_TOOLS_BINARY_ROOT}/source" )
+         set (SPIRV_TOOLS_OPT_SEARCH_PATH "${SPIRV_TOOLS_OPT_BINARY_ROOT}/source/opt" )
      else()
--        set (SPIRV_TOOLS_SEARCH_PATH "${EXTERNAL_SOURCE_ROOT}/spirv-tools/${BUILDTGT_DIR}/source" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
-+        set (SPIRV_TOOLS_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${EXTERNAL_SOURCE_ROOT}/spirv-tools/${BUILDTGT_DIR}/source" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
+-        set (SPIRV_TOOLS_SEARCH_PATH "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/External/spirv-tools/source" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
+-        set (SPIRV_TOOLS_OPT_SEARCH_PATH "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/External/spirv-tools/source/opt" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
++        set (SPIRV_TOOLS_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/External/spirv-tools/source" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
++        set (SPIRV_TOOLS_OPT_SEARCH_PATH "${CMAKE_INSTALL_LIBDIR}" "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/External/spirv-tools/source/opt" "${CMAKE_SOURCE_DIR}/../x86_64/lib/spirv-tools" )
      endif()
  endif()
  
  find_program(GLSLANG_VALIDATOR NAMES glslangValidator
--             HINTS "${CMAKE_SOURCE_DIR}/external/glslang/${BUILDTGT_DIR}/install/bin"
+-             HINTS "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/install/bin"
 +             HINTS "/usr/bin"
-+	           "${CMAKE_SOURCE_DIR}/external/glslang/${BUILDTGT_DIR}/install/bin"
++                   "${EXTERNAL_SOURCE_ROOT}/glslang/${BUILDTGT_DIR}/install/bin"
                     "${GLSLANG_BINARY_ROOT}/StandAlone"
                     "${PROJECT_SOURCE_DIR}/external/${BINDATA_DIR}")
  
 -find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "${EXTERNAL_SOURCE_ROOT}/glslang"
-+find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "/usr/include/glslang" "${EXTERNAL_SOURCE_ROOT}/glslang"
++find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "/usr/include" "${EXTERNAL_SOURCE_ROOT}/glslang"
                                                      "${CMAKE_SOURCE_DIR}/../glslang"
                                                DOC "Path to SPIRV/spirv.hpp")
  
--find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "${EXTERNAL_SOURCE_ROOT}/spirv-tools/include"
-+find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "/usr/include" "${EXTERNAL_SOURCE_ROOT}/spirv-tools/include"
-                                                    "${EXTERNAL_SOURCE_ROOT}/SPIRV-Tools/include"
-                                                    "${CMAKE_SOURCE_DIR}/../spirv-tools/include"
-                                                    "${CMAKE_SOURCE_DIR}/../SPIRV-Tools/include"
-diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/smoke/CMakeLists.txt VulkanTools-sdk-1.0.32.0/demos/smoke/CMakeLists.txt
---- VulkanTools-sdk-1.0.32.0.orig/demos/smoke/CMakeLists.txt	2016-11-10 18:52:27.000000000 +0100
-+++ VulkanTools-sdk-1.0.32.0/demos/smoke/CMakeLists.txt	2016-11-23 14:15:38.000000000 +0100
+-find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "${EXTERNAL_SOURCE_ROOT}/glslang/External/spirv-tools/include"
++find_path(SPIRV_TOOLS_INCLUDE_DIR spirv-tools/libspirv.h HINTS "/usr/include" "${EXTERNAL_SOURCE_ROOT}/glslang/External/spirv-tools/include"
+                                                    "${CMAKE_SOURCE_DIR}/../glslang/External/spirv-tools/include"
+                                              DOC "Path to spirv-tools/libspirv.h")
+ 
+@@ -325,8 +326,8 @@
+     # NOTE: If you modify this call to use --rev_file instead of --git_dir (to read the commit ID from a file instead of
+     # parsing from a Git repository), you probably also want to add the revision file to the list of DEPENDS on the
+     # subsequent line (to ensure that the script is re-run when the revision file is modified).
+-    COMMAND ${PYTHON_CMD} ${SCRIPTS_DIR}/external_revision_generator.py --git_dir ${source_dir} -s ${symbol_name} -o ${output}
+-    DEPENDS ${SCRIPTS_DIR}/external_revision_generator.py ${source_dir}/.git/HEAD ${source_dir}/.git/index
++    COMMAND ${PYTHON_CMD} ${SCRIPTS_DIR}/external_revision_generator.py --rev_file ${source_dir}/.git_rev -s ${symbol_name} -o ${output}
++    DEPENDS ${SCRIPTS_DIR}/external_revision_generator.py ${source_dir}/.git_rev
+     )
+ endmacro()
+ 
+--- VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/demos/smoke/CMakeLists.txt.orig	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/demos/smoke/CMakeLists.txt	2016-11-23 14:15:38.000000000 +0100
 @@ -10,7 +10,7 @@
  macro(glsl_to_spirv src)
      add_custom_command(OUTPUT ${src}.h
@@ -55,9 +58,8 @@ diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/smoke/CMakeLists.txt V
          )
  endmacro()
  
-diff -dur -x '*.orig' VulkanTools-sdk-1.0.32.0.orig/demos/smoke/glsl-to-spirv VulkanTools-sdk-1.0.32.0/demos/smoke/glsl-to-spirv
---- VulkanTools-sdk-1.0.32.0.orig/demos/smoke/glsl-to-spirv	2016-11-10 18:52:27.000000000 +0100
-+++ VulkanTools-sdk-1.0.32.0/demos/smoke/glsl-to-spirv	2016-11-23 14:15:38.000000000 +0100
+--- VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/demos/smoke/glsl-to-spirv.orig	2016-11-10 18:52:27.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/demos/smoke/glsl-to-spirv	2016-11-23 14:15:38.000000000 +0100
 @@ -32,7 +32,7 @@
  in_filename = sys.argv[1]
  out_filename = sys.argv[2] if len(sys.argv) > 2 else None

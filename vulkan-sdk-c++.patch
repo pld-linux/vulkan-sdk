@@ -1,0 +1,10 @@
+--- VulkanTools-sdk-1.0.68.0/layersvt/device_simulation.cpp.orig	2018-02-07 18:36:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/layersvt/device_simulation.cpp	2018-03-03 18:48:31.184070949 +0100
+@@ -48,6 +48,7 @@
+ #include <vector>
+ #include <fstream>
+ #include <mutex>
++#include <sstream>
+ 
+ #include <json/json.h>  // https://github.com/open-source-parsers/jsoncpp
+ 
