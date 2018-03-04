@@ -17,7 +17,7 @@ Summary:	LunarG Vulkan SDK
 Summary(pl.UTF-8):	Pakiet programistyczny (SDK) LunarG Vulkan
 Name:		vulkan-sdk
 Version:	1.0.68.0
-Release:	2
+Release:	3
 License:	Apache v2.0, parts MIT-like
 Group:		Development
 Source0:	https://github.com/LunarG/VulkanTools/archive/sdk-%{version}/VulkanTools-%{version}.tar.gz
@@ -187,7 +187,9 @@ echo '1d7b1423f939027da9a9524765a36fa71be265cd' > submodules/Vulkan-LoaderAndVal
 install -d build
 cd build
 
+# .pc file creation expect CMAKE_INSTALL_LIBDIR to be relative (to CMAKE_INSTALL_PREFIX)
 %cmake .. \
+	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
 	-DJSONCPP_INCLUDE_DIR=/usr/include/jsoncpp \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
 	-DBUILD_WSI_MIR_SUPPORT=%{?with_mir:ON}%{!?with_mir:OFF} \
