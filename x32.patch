@@ -9,3 +9,19 @@
      defined(__aarch64__) || defined(__powerpc64__)
  // If pointers are 64-bit, then there can be separate counters for each
  // NONDISPATCHABLE_HANDLE type.  Otherwise they are all typedef uint64_t.
+--- VulkanTools-sdk-1.0.68.0/vktrace/CMakeLists.txt.orig	2018-02-07 18:36:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/vktrace/CMakeLists.txt	2018-03-04 18:47:46.848025808 +0100
+@@ -128,13 +128,8 @@
+ 
+ 
+ if ((NOT MSVC) AND (NOT BUILD_X64) AND (NOT CMAKE_SIZEOF_VOID_P EQUAL 8))
+-    set(CMAKE_CXX_FLAGS_LIST "${CMAKE_CXX_FLAGS_LIST} -m32")
+-    set(CMAKE_EXE_LINK_FLAGS_LIST "${CMAKE_EXE_LINK_FLAGS_LIST} -m32")
+-    set(CMAKE_SHARED_LINK_FLAGS_LIST "${CMAKE_SHARED_LINK_FLAGS_LIST} -m32")
+ 
+     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+-    set(CMAKE_SYSTEM_LIBRARY_PATH /lib32 /usr/lib32 /usr/lib/i386-linux-gnu /usr/local/lib32)
+-    set(CMAKE_IGNORE_PATH /lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib64 /usr/local/lib)
+ endif()
+ 
+ function(add_compiler_flag flag)

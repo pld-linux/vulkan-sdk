@@ -17,7 +17,7 @@ Summary:	LunarG Vulkan SDK
 Summary(pl.UTF-8):	Pakiet programistyczny (SDK) LunarG Vulkan
 Name:		vulkan-sdk
 Version:	1.0.68.0
-Release:	1
+Release:	2
 License:	Apache v2.0, parts MIT-like
 Group:		Development
 Source0:	https://github.com/LunarG/VulkanTools/archive/sdk-%{version}/VulkanTools-%{version}.tar.gz
