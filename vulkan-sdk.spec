@@ -51,9 +51,9 @@ BuildRequires:	libstdc++-devel >= 6:4.7
 BuildRequires:	libxcb-devel
 %{?with_mir:BuildRequires:	mir-devel}
 BuildRequires:	pkgconfig
-BuildRequires:	python3 >= 3
+BuildRequires:	python3 >= 1:3
 BuildRequires:	python3-lxml
-BuildRequires:	python3-modules >= 3
+BuildRequires:	python3-modules >= 1:3
 BuildRequires:	qt5-build >= 5
 BuildRequires:	spirv-tools-devel >= v2018.1-0.s20180210
 BuildRequires:	udev-devel
