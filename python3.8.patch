@@ -1,0 +1,34 @@
+diff -ur VulkanTools-sdk-1.0.68.0.orig/scripts/lvl_genvk.py VulkanTools-sdk-1.0.68.0/scripts/lvl_genvk.py
+--- VulkanTools-sdk-1.0.68.0.orig/scripts/lvl_genvk.py	2018-02-07 18:36:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/scripts/lvl_genvk.py	2022-11-03 17:22:42.393051040 +0100
+@@ -32,11 +32,11 @@
+ 
+ def startTimer(timeit):
+     global startTime
+-    startTime = time.clock()
++    startTime = time.process_time()
+ 
+ def endTimer(timeit, msg):
+     global startTime
+-    endTime = time.clock()
++    endTime = time.process_time()
+     if (timeit):
+         write(msg, endTime - startTime, file=sys.stderr)
+         startTime = None
+diff -ur VulkanTools-sdk-1.0.68.0.orig/submodules/Vulkan-LoaderAndValidationLayers/scripts/lvl_genvk.py VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/scripts/lvl_genvk.py
+--- VulkanTools-sdk-1.0.68.0.orig/submodules/Vulkan-LoaderAndValidationLayers/scripts/lvl_genvk.py	2018-02-06 21:25:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/submodules/Vulkan-LoaderAndValidationLayers/scripts/lvl_genvk.py	2022-11-03 17:22:47.606213526 +0100
+@@ -33,11 +33,11 @@
+ 
+ def startTimer(timeit):
+     global startTime
+-    startTime = time.clock()
++    startTime = time.process_time()
+ 
+ def endTimer(timeit, msg):
+     global startTime
+-    endTime = time.clock()
++    endTime = time.process_time()
+     if (timeit):
+         write(msg, endTime - startTime, file=sys.stderr)
+         startTime = None
