@@ -188,6 +188,9 @@ install -d submodules/Vulkan-LoaderAndValidationLayers/external/glslang/External
 # spirv-tools commit ID
 echo '1d7b1423f939027da9a9524765a36fa71be265cd' > submodules/Vulkan-LoaderAndValidationLayers/external/glslang/External/spirv-tools/.git_rev
 
+%{__sed} -i -e '1s|/usr/bin/env python3|%{__python3}|' \
+	./submodules/Vulkan-LoaderAndValidationLayers/demos/smoke/{generate-dispatch-table.py,glsl-to-spirv}
+
 %build
 install -d build
 cd build
