@@ -190,6 +190,7 @@ cd build
 
 # .pc file creation expect CMAKE_INSTALL_LIBDIR to be relative (to CMAKE_INSTALL_PREFIX)
 %cmake .. \
+	-DCMAKE_ASM-ATT_COMPILER=%{__as} \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
 	-DJSONCPP_INCLUDE_DIR=/usr/include/jsoncpp \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
