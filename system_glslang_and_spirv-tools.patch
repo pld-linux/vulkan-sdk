@@ -27,7 +27,7 @@
                     "${PROJECT_SOURCE_DIR}/external/${BINDATA_DIR}")
  
 -find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "${EXTERNAL_SOURCE_ROOT}/glslang"
-+find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "/usr/include" "${EXTERNAL_SOURCE_ROOT}/glslang"
++find_path(GLSLANG_SPIRV_INCLUDE_DIR SPIRV/spirv.hpp HINTS "/usr/include/glslang" "${EXTERNAL_SOURCE_ROOT}/glslang"
                                                      "${CMAKE_SOURCE_DIR}/../glslang"
                                                DOC "Path to SPIRV/spirv.hpp")
  
