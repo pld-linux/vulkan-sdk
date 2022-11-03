@@ -55,6 +55,7 @@ BuildRequires:	python3 >= 1:3
 BuildRequires:	python3-lxml
 BuildRequires:	python3-modules >= 1:3
 BuildRequires:	qt5-build >= 5
+BuildRequires:	rpmbuild(macros) >= 1.605
 BuildRequires:	spirv-tools-devel >= v2018.1-0.s20180210
 BuildRequires:	udev-devel
 %{?with_wayland:BuildRequires:	wayland-devel}
