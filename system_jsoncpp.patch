@@ -34,7 +34,7 @@
 -target_link_libraries(via ${LIBRARIES})
 +target_link_libraries(via ${LIBRARIES} ${JSONCPP_LIB})
  if(WIN32)
-     target_link_libraries(via version)
+     target_link_libraries(via version shlwapi Cfgmgr32)
  endif()
 --- VulkanTools-sdk-1.0.68.0/via/CMakeLists-SDK.txt.orig	2018-02-07 18:36:10.000000000 +0100
 +++ VulkanTools-sdk-1.0.68.0/via/CMakeLists-SDK.txt	2018-03-03 13:54:26.184272423 +0100
