@@ -1,0 +1,22 @@
+diff -ur VulkanTools-sdk-1.0.68.0.orig/layersvt/monitor.cpp VulkanTools-sdk-1.0.68.0/layersvt/monitor.cpp
+--- VulkanTools-sdk-1.0.68.0.orig/layersvt/monitor.cpp	2018-02-07 18:36:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/layersvt/monitor.cpp	2022-11-03 17:30:54.340364694 +0100
+@@ -24,6 +24,7 @@
+ #include "vk_layer_extension_utils.h"
+ #include "vk_layer_table.h"
+ #include <assert.h>
++#include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+diff -ur VulkanTools-sdk-1.0.68.0.orig/vktrace/vktrace_layer/vktrace_lib_trim.cpp VulkanTools-sdk-1.0.68.0/vktrace/vktrace_layer/vktrace_lib_trim.cpp
+--- VulkanTools-sdk-1.0.68.0.orig/vktrace/vktrace_layer/vktrace_lib_trim.cpp	2018-02-07 18:36:10.000000000 +0100
++++ VulkanTools-sdk-1.0.68.0/vktrace/vktrace_layer/vktrace_lib_trim.cpp	2022-11-03 17:30:29.794493694 +0100
+@@ -20,6 +20,7 @@
+ #include "vktrace_vk_packet_id.h"
+ #include "vk_struct_size_helper.h"
+ #include "vulkan.h"
++#include <string>
+ 
+ // defined in vktrace_lib_trace.cpp
+ extern layer_device_data *mdd(void *object);

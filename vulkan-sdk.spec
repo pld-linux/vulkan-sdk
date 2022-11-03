@@ -31,6 +31,7 @@ Patch3:		%{name}-c++.patch
 Patch4:		x32.patch
 Patch5:		system_jsoncpp.patch
 Patch6:		python3.8.patch
+Patch7:		build.patch
 URL:		http://lunarg.com/vulkan-sdk/
 BuildRequires:	GLM
 BuildRequires:	Qt5Core-devel >= 5
@@ -179,6 +180,7 @@ Programy demonstracyjne Vulkana.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 find . -name '*.orig' | xargs -r rm -f
 
