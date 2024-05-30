@@ -33,7 +33,7 @@ Patch5:		system_jsoncpp.patch
 Patch6:		python3.8.patch
 Patch7:		build.patch
 URL:		http://lunarg.com/vulkan-sdk/
-BuildRequires:	GLM
+BuildRequires:	GLM-devel
 BuildRequires:	Qt5Core-devel >= 5
 BuildRequires:	Qt5Gui-devel >= 5
 BuildRequires:	Qt5Svg-devel >= 5
